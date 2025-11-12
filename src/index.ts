@@ -99,7 +99,7 @@ export function activate(extensionContext: ExtensionContext): void {
           const bbox = detection.bbox;
           const centerX = bbox.center.position.x;
           const centerY = bbox.center.position.y;
-          const classId = detection.results[0]?.hypothesis?.class_id || "id-unknown";
+          const classId = detection.results[0]?.hypothesis?.class_id || "unknown";
           const score = detection.results[0]?.hypothesis?.score;
           const text = score !== undefined ? `id:${classId} (${(score*100).toFixed(1)}%)` : classId;
           const top = centerY - (bbox.size_y / 2);

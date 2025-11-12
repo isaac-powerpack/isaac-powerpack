@@ -1,11 +1,37 @@
 import { ExtensionContext } from "@foxglove/extension";
-import { ImageAnnotations } from "@foxglove/schemas";
+import { ImageAnnotations, Pose } from "@foxglove/schemas";
 
 import { initExamplePanel } from "./ExamplePanel";
 
-type MyGps = {
-  lat: number;
-  lon: number;
+type PoseWithCovariance = {
+  covariance: number[], // length 36
+  pose: Pose
+}
+
+type ObjectHypothesisWithPose={
+  hypothesis: {
+    class_id: string,
+    score: number, // [0-1]
+  },
+  pose: PoseWithCovariance
+
+}
+
+type Detection2D = {
+  header: Header,
+  results: ObjectHypothesisWithPose[],
+  bbox: any,
+  id: string,
+}
+
+type Header = {
+  stamp: { sec: number; nanosec: number };
+  frame_id: string;
+}
+
+type Detection2DArray = {
+  header: Header
+  detections: Detection2D[]
 }
 
 export function activate(extensionContext: ExtensionContext): void {
@@ -14,7 +40,7 @@ export function activate(extensionContext: ExtensionContext): void {
       type: "schema",
       fromSchemaName: "vision_msgs/msg/Detection2DArray",
       toSchemaName: "foxglove.ImageAnnotations",
-      converter: (_msg: MyGps): Partial<ImageAnnotations> => {
+      converter: (_msg: Detection2DArray): Partial<ImageAnnotations> => {
         return {
           texts: [
             {

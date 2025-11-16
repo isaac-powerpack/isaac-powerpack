@@ -2,7 +2,7 @@ import { ImageAnnotations,Vector2 } from "@foxglove/schemas";
 import { Detection2DArray } from "./types";
 import defaultLabels from "./label.config.json";
 
-function detection2DArraySchemaConverter(msg: Detection2DArray): Partial<ImageAnnotations> {
+function detection2DArrayConverter(msg: Detection2DArray): Partial<ImageAnnotations> {
         const timestamp = { sec: msg.header.stamp.sec, nsec: msg.header.stamp.nanosec };
 
         const textLabel = (timestamp:any, text:string, position:Vector2) => ({
@@ -71,4 +71,4 @@ function detection2DArraySchemaConverter(msg: Detection2DArray): Partial<ImageAn
         };
       }
 
-export  { detection2DArraySchemaConverter };
+export  { detection2DArrayConverter };

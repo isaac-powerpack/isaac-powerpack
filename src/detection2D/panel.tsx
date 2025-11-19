@@ -1,37 +1,36 @@
 import { PanelExtensionContext, SettingsTreeAction, Topic } from "@foxglove/extension";
-import { ReactElement, useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { ReactElement, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { produce } from "immer";
 
 type PanelState = {
     data: {
-        label: string;
         topic?: string,
-        visible: boolean;
+        dataLabelVariable?: string,
     },
-    settings: {
-        enable: boolean
-        showId: boolean,
-        showScore: boolean,
-        showLabel: boolean,
+    display: {
+        enable: boolean,
+        id: boolean,
+        score: boolean,
+        objectLabel: boolean,
     }
 }
 
 function Detection2DPanel({ context }: { context: PanelExtensionContext }): ReactElement {
-    const [, setTopics] = useState<readonly Topic[] | undefined>();
+    const [topics, setTopics] = useState<readonly Topic[] | undefined>();
     const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
-    const [state,] = useState<PanelState>(() => {
+    const [state, setState] = useState<PanelState>(() => {
         const initialState = context.initialState as Partial<PanelState>;
         return {
             data: {
-                label: initialState?.data?.label ?? "Detection2D Panel",
-                visible: initialState?.data?.visible ?? true,
                 topic: initialState?.data?.topic,
+                dataLabelVariable: initialState?.data?.dataLabelVariable ?? "default",
             },
-            settings: {
-                enable: initialState?.settings?.enable ?? true,
-                showId: initialState?.settings?.showId ?? true,
-                showScore: initialState?.settings?.showScore ?? true,
-                showLabel: initialState?.settings?.showLabel ?? true,
+            display: {
+                enable: initialState?.display?.enable ?? true,
+                id: initialState?.display?.id ?? true,
+                score: initialState?.display?.score ?? true,
+                objectLabel: initialState?.display?.objectLabel ?? true,
             },
         };
     });
@@ -51,6 +50,13 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
 
     // Setting Editor
 
+    const imageTopics = useMemo(
+        () => (topics ?? []).filter((topic) =>
+            topic.schemaName === "sensor_msgs/msg/Image"
+        ),
+        [topics],
+    );
+
     const actionHandler = useCallback((action: SettingsTreeAction) => {
         if (action.action === "update") {
             console.log("Be:", "Update action");
@@ -59,50 +65,66 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
 
     useEffect(() => {
         context.saveState(state);
+
+        const topicOptions = imageTopics.map((topic) => ({ value: topic.name, label: topic.name }));
+
         context.updatePanelSettingsEditor({
             actionHandler,
             nodes: {
                 data: {
-                    visible: state.data.visible,
                     label: "General",
                     fields: {
                         topic: {
                             label: "Topic",
                             input: "select",
-                            options: [{ value: "/front_stereo_camera/left/image_rect_color", label: "/front_stereo_camera/left/image_rect_color" }, { value: "/front_stereo_camera/right/image_rect_color", label: "/front_stereo_camera/right/image_rect_color" }],
+                            options: topicOptions,
                             value: state.data.topic,
-                        }
+                        },
+
+                        dataLabelVariable: {
+                            label: "Data Label Variable",
+                            input: "string",
+                            value: state.data.dataLabelVariable,
+                            help: "Variable name pointed to the data mapping between id and label. Specify \"default\" or leave empty to use the default extension mapping data.",
+                        },
                     }
                 },
-                settings: {
-                    label: "Settings",
+                display: {
+                    label: "Display",
                     fields: {
-                        enable: {
-                            label: "Enable Detection2D Panel",
-                            input: "boolean",
-                            value: state.settings.enable,
-                        },
-                        showId: {
-                            label: "Show Detection ID",
-                            input: "boolean",
-                            value: state.settings.showId,
-                        },
                         showScore: {
-                            label: "Show Detection Score",
+                            label: "Show Score",
                             input: "boolean",
-                            value: state.settings.showScore,
+                            value: state.display.score,
                         },
                         showLabel: {
-                            label: "Show Detection Label",
+                            label: "Show Label",
                             input: "boolean",
-                            value: state.settings.showLabel,
+                            value: state.display.objectLabel,
                         },
                     }
                 }
             }
         });
 
-    }, []);
+    }, [imageTopics, actionHandler, context, state]);
+
+    // Select default topic
+    useEffect(() => {
+        if (state.data.topic !== undefined || imageTopics.length === 0) {
+            return
+        }
+
+        const topicNames = imageTopics.map((topic) => topic.name);
+        console.log("image topics names:", topicNames);
+        const hasResizeImage = topicNames.includes("/resize/image");
+        const defaultTopic = hasResizeImage ? "/resize/image" : imageTopics[0]?.name;
+
+        setState(produce((draft) => {
+            draft.data.topic = defaultTopic;
+        }));
+
+    }, [state.data.topic, imageTopics]);
 
     return (
         <div style={{ padding: "1rem" }}>

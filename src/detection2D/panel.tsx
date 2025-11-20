@@ -12,7 +12,7 @@ type PanelState = {
         objectLabelData?: string,
     },
     display: {
-        enable: boolean,
+        boundingBox: boolean,
         id: boolean,
         score: boolean,
         objectLabel: boolean,
@@ -33,7 +33,7 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
                 objectLabelData: initialState?.data?.objectLabelData ?? DEFAULT_OBJECT_LABEL_VAR_NAME,
             },
             display: {
-                enable: initialState?.display?.enable ?? true,
+                boundingBox: initialState?.display?.boundingBox ?? true,
                 id: initialState?.display?.id ?? true,
                 score: initialState?.display?.score ?? true,
                 objectLabel: initialState?.display?.objectLabel ?? true,
@@ -112,13 +112,23 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
                 display: {
                     label: "Display",
                     fields: {
-                        showScore: {
-                            label: "Show Score",
+                        boundingBox: {
+                            label: "Bounding Box",
+                            input: "boolean",
+                            value: state.display.boundingBox,
+                        },
+                        id: {
+                            label: "Id",
+                            input: "boolean",
+                            value: state.display.id,
+                        },
+                        score: {
+                            label: "Score",
                             input: "boolean",
                             value: state.display.score,
                         },
-                        showLabel: {
-                            label: "Show Label",
+                        objectLabel: {
+                            label: "Object Label",
                             input: "boolean",
                             value: state.display.objectLabel,
                         },

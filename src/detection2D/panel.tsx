@@ -18,7 +18,7 @@ type PanelState = {
     }
 }
 
-const DEFAULT_OBJECT_LABEL_VAR_NAME = "default_object_label";
+const DEFAULT_OBJECT_LABEL_VAR_NAME = "ipp_default_object_label";
 
 function Detection2DPanel({ context }: { context: PanelExtensionContext }): ReactElement {
     const [topics, setTopics] = useState<readonly Topic[] | undefined>();

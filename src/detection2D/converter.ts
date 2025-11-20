@@ -1,11 +1,11 @@
 import { ImageAnnotations, Vector2 } from "@foxglove/schemas";
 
-import defaultConfig from "./default.config.json";
+import defaultLabel from "./default.label.json";
 import { Detection2DArray } from "./types";
 
 function detection2DArrayConverter(msg: Detection2DArray): Partial<ImageAnnotations> {
 
-  const config = defaultConfig;
+  const objectLabel = defaultLabel;
 
   const timestamp = { sec: msg.header.stamp.sec, nsec: msg.header.stamp.nanosec };
 
@@ -47,8 +47,7 @@ function detection2DArrayConverter(msg: Detection2DArray): Partial<ImageAnnotati
     };
   });
 
-  const labels: Record<string, string> = config.objects ?? {};
-  const display: string[] = config.display ?? [];
+  const labels: Record<string, string> = objectLabel ?? {};
 
   const texts = msg.detections.map((detection) => {
     const bbox = detection.bbox;
@@ -64,25 +63,15 @@ function detection2DArrayConverter(msg: Detection2DArray): Partial<ImageAnnotati
 
     const output = []
 
-    const isShowScore = display.includes("score");
-    const isShowId = display.includes("id");
 
-    if (display.includes("name")) {
-      const objectName = labels[classId] ?? "unknown";
-      output.push(textLabel(timestamp, objectName, { x: left, y: bottom }));
-    }
+    const objectName = labels[classId] ?? "unknown";
+    output.push(textLabel(timestamp, objectName, { x: left, y: bottom }));
 
-    if (isShowId || isShowScore) {
-      let mainText = "";
-      if (isShowId) {
-        mainText += `id:${classId}`;
-      }
-      if (isShowScore) {
-        const scoreValue = score || 0;
-        mainText += `${mainText ? " " : ""}(${(scoreValue * 100).toFixed(1)}%)`;
-      }
-      output.push(textLabel(timestamp, mainText, { x: left, y: top + 12 }));
-    }
+    let mainText = "";
+    mainText += `id:${classId}`;
+    const scoreValue = score || 0;
+    mainText += `${mainText ? " " : ""}(${(scoreValue * 100).toFixed(1)}%)`;
+    output.push(textLabel(timestamp, mainText, { x: left, y: top + 12 }));
 
     return output;
   });

@@ -13,6 +13,4 @@ export function activate(extensionContext: ExtensionContext): void {
     toSchemaName: "foxglove.ImageAnnotations",
     converter: detection2DArrayConverter,
   });
-
-
 }

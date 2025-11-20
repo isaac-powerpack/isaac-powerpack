@@ -1,12 +1,14 @@
 import { PanelExtensionContext, SettingsTreeAction, Topic } from "@foxglove/extension";
-import { ReactElement, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { ReactElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { produce } from "immer";
+import defaultLabel from "./default.label.json";
 
 type PanelState = {
     data: {
         topic?: string,
-        dataLabelVariable?: string,
+        // reference string to variable name
+        objectLabelData?: string,
     },
     display: {
         enable: boolean,
@@ -16,15 +18,18 @@ type PanelState = {
     }
 }
 
+const DEFAULT_OBJECT_LABEL_VAR_NAME = "default_object_label";
+
 function Detection2DPanel({ context }: { context: PanelExtensionContext }): ReactElement {
     const [topics, setTopics] = useState<readonly Topic[] | undefined>();
     const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
+    const isInit = useRef(false);
     const [state, setState] = useState<PanelState>(() => {
         const initialState = context.initialState as Partial<PanelState>;
         return {
             data: {
                 topic: initialState?.data?.topic,
-                dataLabelVariable: initialState?.data?.dataLabelVariable ?? "default",
+                objectLabelData: initialState?.data?.objectLabelData ?? DEFAULT_OBJECT_LABEL_VAR_NAME,
             },
             display: {
                 enable: initialState?.display?.enable ?? true,
@@ -40,8 +45,18 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         context.onRender = (renderState, done) => {
             setRenderDone(() => done);
             setTopics(renderState.topics);
+
+            const variables = renderState.variables;
+            const defaultObjectLabelVar = variables?.get(DEFAULT_OBJECT_LABEL_VAR_NAME);
+            if (!isInit.current) {
+                if (!defaultObjectLabelVar) {
+                    context.setVariable(DEFAULT_OBJECT_LABEL_VAR_NAME, defaultLabel);
+                }
+                isInit.current = true;
+            }
         }
         context.watch("topics");
+        context.watch("variables")
     }, [context]);
 
     useEffect(() => {
@@ -81,10 +96,10 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
                             value: state.data.topic,
                         },
 
-                        dataLabelVariable: {
-                            label: "Data Label Variable",
+                        objectLabelData: {
+                            label: "Object Label Data",
                             input: "string",
-                            value: state.data.dataLabelVariable,
+                            value: state.data.objectLabelData,
                             help: "Variable name pointed to the data mapping between id and label. Specify \"default\" or leave empty to use the default extension mapping data.",
                         },
                     }

@@ -2,6 +2,7 @@ import { PanelExtensionContext, SettingsTreeAction, Topic } from "@foxglove/exte
 import { ReactElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { produce } from "immer";
+import { set } from "lodash";
 import defaultLabel from "./default.label.json";
 
 type PanelState = {
@@ -74,7 +75,11 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
 
     const actionHandler = useCallback((action: SettingsTreeAction) => {
         if (action.action === "update") {
-            console.log("Be:", "Update action");
+            const { path, value } = action.payload;
+            setState(produce((draft) => set(draft, path, value)));
+
+        } else if (action.action === "perform-node-action") {
+            console.log("Be:", "perform-node-action action");
         }
     }, [context]);
 

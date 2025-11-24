@@ -1,39 +1,34 @@
-# isaac-powerpack
 
-[Foxglove](https://foxglove.dev) allows developers to create [extensions](https://docs.foxglove.dev/docs/visualization/extensions/introduction), or custom code that is loaded and executed inside the Foxglove application. This can be used to add custom panels. Extensions are authored in TypeScript using the `@foxglove/extension` SDK.
+# Isaac Powerpack 🔋
 
-## Develop
 
-Extension development uses the `npm` package manager to install development dependencies and run build scripts.
+Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA Isaac ROS development with Foxglove Studio and NVIDIA Jetson boards.
 
-To install extension dependencies, run `npm` from the root of the extension package.
+🚧 This project is in early development. Many features are still in progress and subject to breaking changes.
 
-```sh
-npm install
-```
+🙋 Everything is open for contributions.
 
-To build and install the extension into your local Foxglove desktop app, run:
+## Features
+- [ ] **(In progress)** Detection 2D Module
+  - [ ] `vision_msgs/msg/Detection2DArray` to `foxglove.ImageAnnotations` Converter
+  - [ ] Dection 2D Panel to display image and bounding box from Jetson Orin Device
+  - [ ] Disply bounding box, Id, Object Label
+  - [ ] Custom mapping between Object Label and Id
+- [ ] Isaac Sim Camera Controller Module
+  - [ ] Isaac Sim extension Camera Spawner and required ROS2 omnigraph generator for [Hawk Stero Camera](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
+  - [ ] Keyboard Control via Foxglove
+  - [ ] Joy Control via Foxglove. Support [Logitect F710 Gamepad](https://www.logitechg.com/th-th/products/gamepads/f710-wireless-gamepad.html) and [PS5 DualSense wireless controller](https://www.playstation.com/en-th/accessories/dualsense-wireless-controller/)
+  - [ ] Add Support to [Intel Realsense Depth Camera D455](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
+- [ ] Detection 3D Module
 
-```sh
-npm run local-install
-```
 
-Open the Foxglove desktop (or `ctrl-R` to refresh if it is already open). Your extension is installed and available within the app.
+## Supports
 
-## Package
+## Install
+?
 
-Extensions are packaged into `.foxe` files. These files contain the metadata (package.json) and the build code for the extension.
+## Documentation
+?
 
-Before packaging, make sure to set `name`, `publisher`, `version`, and `description` fields in _package.json_. When ready to distribute the extension, run:
-
-```sh
-npm run package
-```
-
-This command will package the extension into a `.foxe` file in the local directory.
-
-## Publish
-
-You can publish the extension to the public registry or privately for your organization.
-
-See documentation here: https://docs.foxglove.dev/docs/visualization/extensions/publish/#packaging-your-extension
+## Contribution
+?

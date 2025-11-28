@@ -25,11 +25,11 @@ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA
 ?
 
 ## Usage
-Here is the table of Isaac Powerpack features mapping to their corresponding Isaac ROS Packages for visualization and debugging.
+Here is the table of Isaac Powerpack features mapping to their corresponding Isaac ROS Packages or Isaac Sim Extensions:
 
-| Feature | Isaac ROS Package |
-| :------ | :---------------- |
-| ?       | ?                 |
+| Feature | Package |
+| :------ | :------ |
+| ?       | ?       |
 
 
 ## Support Matrix

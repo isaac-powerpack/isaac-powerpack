@@ -34,11 +34,11 @@ Here is the table mapping of Isaac Powerpack features to their corresponding Isa
 
 ## Support Matrix
 
-| Platform              | Version / Validation                                                                 |
-| :-------------------- | :----------------------------------------------------------------------------------- |
-| **Device**            | ✅ **Jetson AGX Orin 32 GB** — Tested <br> ⏳ **Jetson Orin Nano 8 GB** — Pending Test |
-| **Isaac ROS Version** | `release-3.2`                                                                        |
-| **Isaac Sim**         | `5.1.0`                                                                              |
+| Platform              | Version / Validation                                                         |
+| :-------------------- | :--------------------------------------------------------------------------- |
+| **Device**            | ✅ Jetson AGX Orin 32 GB — Tested <br> ⏳ Jetson Orin Nano 8 GB — Pending Test |
+| **Isaac ROS Version** | `release-3.2`                                                                |
+| **Isaac Sim**         | `5.1.0`                                                                      |
 
 <br>
  

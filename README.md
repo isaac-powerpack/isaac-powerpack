@@ -19,16 +19,40 @@ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA
   - [ ] Joy Control via Foxglove. Support [Logitech F710 Gamepad](https://www.logitechg.com/th-th/products/gamepads/f710-wireless-gamepad.html) and [PS5 DualSense wireless controller](https://www.playstation.com/en-th/accessories/dualsense-wireless-controller/)
   - [ ] Add Support to [Intel Realsense Depth Camera D455](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
 - [ ] Detection 3D Module
-
-
-## Supports
-?
+- [ ] Jetson Stat
 
 ## Install
 ?
+
+## Usage
+Here is the table mapping of Isaac Powerpack features to their corresponding Isaac ROS Packages for visualization and debugging.
+
+| Feature | Isaac ROS Package |
+| :------ | :---------------- |
+| ?       | ?                 |
+
+
+## Support Matrix
+
+| Platform              | Version / Validation                                                                 |
+| :-------------------- | :----------------------------------------------------------------------------------- |
+| **Device**            | ✅ **Jetson AGX Orin 32 GB** — Tested <br> ⏳ **Jetson Orin Nano 8 GB** — Pending Test |
+| **Isaac ROS Version** | `release-3.2`                                                                        |
+| **Isaac Sim**         | `5.1.0`                                                                              |
+
+<br>
+ 
+> 💡 Notes
+> - This project is actively developed and tested with Isaac ROS release-3.2 on NVIDIA Jetson AGX Orin 32GB. 
+> - The Jetson Orin Nano 8GB (also known as the Jetson Nano Super Developer Kit) is scheduled for upcoming testing.
+> - Isaac Sim is tested on Ubuntu 22.04.
+
 
 ## Documentation
 ?
 
 ## Contribution
-?
+See [Contribution](CONTRIBUTING.md)
+
+## License
+[Apache-2.0](LICENSE).

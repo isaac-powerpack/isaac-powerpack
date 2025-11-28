@@ -8,7 +8,7 @@ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA
 
 🙋 Everything is open for contributions.
 
-## Features
+## Current Features
 - [ ] **(In progress)** Detection 2D Module
   - [ ] `vision_msgs/msg/Detection2DArray` to `foxglove.ImageAnnotations` Converter
   - [ ] Dection 2D Panel to display image and bounding box from Jetson Orin Device
@@ -23,6 +23,7 @@ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA
 
 
 ## Supports
+?
 
 ## Install
 ?

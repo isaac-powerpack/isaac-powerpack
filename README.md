@@ -2,7 +2,7 @@
     <img src="https://raw.githubusercontent.com/bemunin/isaac-powerpack/main/docs/public/logo.svg" width="400"/>
 </p>
 
-✨ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA Isaac ROS development with Foxglove Studio and NVIDIA Jetson boards.
+✨ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA Isaac ROS development on NVIDIA Jetson boards using Foxglove Studio.
 
 🚧 This project is in early development. Many features are still in progress and subject to breaking changes.
 
@@ -15,8 +15,8 @@
 - [ ] **(In progress)** Detection 2D Module
   - [ ] `vision_msgs/msg/Detection2DArray` to `foxglove.ImageAnnotations` Converter
   - [ ] Detection 2D Panel to display image and bounding box from Jetson Orin Device
-  - [ ] Display bounding box, Id, Object Label
-  - [ ] Custom mapping between Object Label and Id
+  - [ ] Display bounding box, Id, Score and Object Label
+  - [ ] Custom mapping the Object Label and Id dataset via Foxglove Variable
 - [ ] Isaac Sim Camera Controller Module
   - [ ] Isaac Sim extension Camera Spawner and required ROS2 omnigraph generator for [Hawk Stereo Camera](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
   - [ ] Keyboard Control via Foxglove

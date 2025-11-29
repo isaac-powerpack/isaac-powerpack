@@ -1,6 +1,6 @@
 import { ExtensionContext } from "@foxglove/extension";
 
-import { detection2DArrayConverter, initDetection2DPanel } from "./detection2D";
+import { detection2DArrayConverter, initDetection2DPanel } from "./detection2d";
 import { initExamplePanel } from "./examples/ExamplePanel";
 
 export function activate(extensionContext: ExtensionContext): void {

@@ -1,6 +1,5 @@
 # Isaac Powerpack 🔋
 
-
 Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA Isaac ROS development with Foxglove Studio and NVIDIA Jetson boards.
 
 🚧 This project is in early development. Many features are still in progress and subject to breaking changes.
@@ -21,7 +20,7 @@ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA
   - [ ] Joy Control via Foxglove. Support [Logitech F710 Gamepad](https://www.logitechg.com/th-th/products/gamepads/f710-wireless-gamepad.html) and [PS5 DualSense wireless controller](https://www.playstation.com/en-th/accessories/dualsense-wireless-controller/)
   - [ ] Add Support to [Intel Realsense Depth Camera D455](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
 - [ ] Detection 3D Module
-- [ ] Jetson Stat
+- [ ] Jetson Stat Module
 
 ## Installation
 ?

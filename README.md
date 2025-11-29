@@ -2,9 +2,9 @@
     <img src="https://raw.githubusercontent.com/bemunin/isaac-powerpack/main/docs/public/logo.svg" width="400"/>
 </p>
 
-# Isaac Powerpack 🔋
+## Isaac Powerpack
 
-Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA Isaac ROS development with Foxglove Studio and NVIDIA Jetson boards.
+✨ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA Isaac ROS development with Foxglove Studio and NVIDIA Jetson boards.
 
 🚧 This project is in early development. Many features are still in progress and subject to breaking changes.
 
@@ -13,6 +13,7 @@ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA
 [Read the Docs to Learn More](docs/index.md)
 
 ## Current Features
+
 - [ ] **(In progress)** Detection 2D Module
   - [ ] `vision_msgs/msg/Detection2DArray` to `foxglove.ImageAnnotations` Converter
   - [ ] Detection 2D Panel to display image and bounding box from Jetson Orin Device
@@ -27,9 +28,11 @@ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA
 - [ ] Jetson Stat Module
 
 ## Installation
+
 ?
 
 ## Usage
+
 Here is the table of Isaac Powerpack features mapping to their corresponding Isaac ROS Packages or Isaac Sim Extensions:
 
 | Feature | Package |
@@ -54,7 +57,9 @@ Here is the table of Isaac Powerpack features mapping to their corresponding Isa
 
 
 ## Contribution
+
 See [Contribution Guide](docs/contributing.md)
 
 ## License
+
 [Apache-2.0](LICENSE).

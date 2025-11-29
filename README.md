@@ -5,7 +5,9 @@ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA
 
 🚧 This project is in early development. Many features are still in progress and subject to breaking changes.
 
-🙋 Everything is open for contributions.
+🙋 We’ll be opening this project for contributions soon.
+
+[Read the Docs to Learn More](docs/index.md)
 
 ## Current Features
 - [ ] **(In progress)** Detection 2D Module
@@ -21,7 +23,7 @@ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA
 - [ ] Detection 3D Module
 - [ ] Jetson Stat
 
-## Install
+## Installation
 ?
 
 ## Usage
@@ -48,11 +50,8 @@ Here is the table of Isaac Powerpack features mapping to their corresponding Isa
 > - Isaac Sim is tested on Ubuntu 22.04.
 
 
-## Documentation
-?
-
 ## Contribution
-See [Contribution](CONTRIBUTING.md)
+See [Contribution Guide](docs/contributing.md)
 
 ## License
 [Apache-2.0](LICENSE).

@@ -10,19 +10,23 @@
 
 [Read the Docs to Learn More](docs/index.md)
 
-## Current Features
+## Features & Milestones
+
+### v0.1.0 (Initial Release)
 
 - [ ] **(In progress)** Detection 2D Module
-  - [ ] `vision_msgs/msg/Detection2DArray` to `foxglove.ImageAnnotations` Converter
-  - [ ] Detection 2D Panel to display image and bounding box from Jetson Orin Device
-  - [ ] Display bounding box, Id, Score and Object Label
-  - [ ] Custom mapping the Object Label and Id dataset via Foxglove Variable
+  - [ ] `vision_msgs/msg/Detection2DArray` to `foxglove.ImageAnnotations` converter
+  - [ ] Detection 2D panel to display images and object detection bounding boxes
+  - [ ] Display object IDs, scores, and label information
+  - [ ] Custom object label and ID dataset via Foxglove variables
 - [ ] Isaac Sim Camera Controller Module
   - [ ] Isaac Sim extension Camera Spawner and required ROS2 omnigraph generator for [Hawk Stereo Camera](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
   - [ ] Keyboard Control via Foxglove
   - [ ] Joy Control via Foxglove. Support [Logitech F710 Gamepad](https://www.logitechg.com/th-th/products/gamepads/f710-wireless-gamepad.html) and [PS5 DualSense wireless controller](https://www.playstation.com/en-th/accessories/dualsense-wireless-controller/)
   - [ ] Add Support to [Intel Realsense Depth Camera D455](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
 - [ ] Detection 3D Module
+
+### v0.2.0 (Future Ideas)
 - [ ] Jetson Stat Module
 
 ## Installation

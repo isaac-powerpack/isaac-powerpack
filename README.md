@@ -16,7 +16,7 @@
 <summary><b>v0.1.0 (🏃 In Progress)</b></summary>
 
 - [ ] Detection2D Module
-  - [*] Create a Detection2D panel for displaying images  
+  - [x] Create a Detection2D panel for displaying images  
   - [ ] Implement a `vision_msgs/msg/Detection2DArray` to `foxglove.ImageAnnotations` converter 
   - [ ] Display 2D bounding boxes on images
   - [ ] Display object IDs, confidence scores, and label information  

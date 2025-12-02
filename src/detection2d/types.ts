@@ -1,5 +1,6 @@
 import { Pose, Vector2 } from "@foxglove/schemas";
 
+// ROS2 & Foxglove message type definitions
 export type PoseWithCovariance = {
   covariance: number[]; // length 36
   pose: Pose;
@@ -67,3 +68,6 @@ export type SensorImage = {
   // If you prefer a typed array:
   // data: Uint8Array;
 }
+
+// Custom event message
+export type ImageMessageEvent = MessageEvent<SensorImage>;

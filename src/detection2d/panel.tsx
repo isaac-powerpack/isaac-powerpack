@@ -12,6 +12,8 @@ const DEFAULT_OBJECT_LABEL_VAR_NAME = "ipp_default_object_label";
 function Detection2DPanel({ context }: { context: PanelExtensionContext }): ReactElement {
     const [message, setMessage] = useState<ImageMessageEvent>();
     const [topics, setTopics] = useState<readonly Topic[] | undefined>();
+    const [variables, setVariables] = useState<ReadonlyMap<string, any> | undefined>();
+
     const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
     const isInit = useRef(false);
 
@@ -26,16 +28,7 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         context.onRender = (renderState, done) => {
             setRenderDone(() => done);
             setTopics(renderState.topics);
-
-            const variables = renderState.variables;
-            const defaultObjectLabelVar = variables?.get(DEFAULT_OBJECT_LABEL_VAR_NAME);
-            if (!isInit.current) {
-                if (!defaultObjectLabelVar) {
-                    context.setVariable(DEFAULT_OBJECT_LABEL_VAR_NAME, defaultLabel);
-                }
-
-                isInit.current = true;
-            }
+            setVariables(renderState.variables);
 
             // message frame update
             if (renderState.currentFrame && renderState.currentFrame.length > 0) {
@@ -51,6 +44,25 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         context.watch("currentFrame");
     }, [context, state.data.topic]);
 
+    // init variables
+    useLayoutEffect(() => {
+        if (isInit.current) {
+            console.log("do nothing, already init");
+            return;
+        }
+
+        console.log("init object label variable name")
+        const defaultObjectLabelVar = variables?.get(DEFAULT_OBJECT_LABEL_VAR_NAME);
+
+        if (!defaultObjectLabelVar) {
+            context.setVariable(DEFAULT_OBJECT_LABEL_VAR_NAME, defaultLabel);
+        }
+
+        isInit.current = true;
+    }, [context, variables]);
+
+
+    // notify painting render done
     useEffect(() => {
         renderDone?.();
     }, [renderDone]);
@@ -62,7 +74,7 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
             <h2>Detection2D Panel</h2>
             <canvas
                 ref={canvasRef}
-                style={{ width: "100%", height: "100%", display: "block", backgroundColor: "orange" }}
+                style={{ width: "100%", height: "100%", display: "block" }}
             />
         </div>
     );

@@ -1,11 +1,11 @@
 import { PanelExtensionContext, Topic } from "@foxglove/extension";
-import { ReactElement, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { ReactElement, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { produce } from "immer";
 import defaultLabel from "./default.label.json";
 import { ImageMessageEvent } from "./types";
 import { useDrawImage } from "./ui/useDrawImage";
 import { usePanelState } from "./ui/usePanelState";
+import { useFilterTopics } from "../lib/hooks/useFilterTopics";
 
 const DEFAULT_OBJECT_LABEL_VAR_NAME = "ipp_default_object_label";
 
@@ -14,16 +14,10 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
     const [topics, setTopics] = useState<readonly Topic[] | undefined>();
     const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
     const isInit = useRef(false);
-    const isInitTopic = useRef(false);
 
-    const imageTopics = useMemo(
-        () => (topics ?? []).filter((topic) =>
-            topic.schemaName === "sensor_msgs/msg/Image"
-        ),
-        [topics],
-    );
+    const imageTopics = useFilterTopics(topics, ["sensor_msgs/msg/Image"]);
 
-    const { state, setState } = usePanelState(context, imageTopics);
+    const { state } = usePanelState(context, imageTopics);
 
     const canvasRef = useDrawImage(message);
 
@@ -46,7 +40,7 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
             // message frame update
             if (renderState.currentFrame && renderState.currentFrame.length > 0) {
                 renderState.currentFrame.forEach((msg: any) => {
-                    if (msg.topic === state.data.topic) {
+                    if (msg.topic === state?.data?.topic) {
                         setMessage(msg as ImageMessageEvent);
                     }
                 });
@@ -61,33 +55,7 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         renderDone?.();
     }, [renderDone]);
 
-    // Select default topic
-    useEffect(() => {
-        if (isInitTopic.current) {
-            return;
-        }
 
-        if (imageTopics.length === 0) {
-            return;
-        }
-        else if (state.data.topic !== undefined) {
-            console.info("Subscribing to topic:", state.data.topic);
-            context.subscribe([{ topic: state.data.topic as string }]);
-            isInitTopic.current = true;
-            return;
-        }
-
-        const topicNames = imageTopics.map((topic) => topic.name);
-        const hasResizeImage = topicNames.includes("/resize/image");
-        const defaultTopic = hasResizeImage ? "/resize/image" : imageTopics[0]?.name;
-
-
-        setState(produce((draft) => {
-            draft.data.topic = defaultTopic;
-        }));
-        isInitTopic.current = true;
-
-    }, [context, state.data.topic, imageTopics]);
 
     return (
         <div style={{ padding: "1rem" }}>

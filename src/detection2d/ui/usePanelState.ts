@@ -1,5 +1,5 @@
 import { PanelExtensionContext, SettingsTreeAction, Topic } from "@foxglove/extension";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { produce } from "immer";
 import { set } from "lodash";
 
@@ -20,6 +20,9 @@ export type PanelState = {
 };
 
 export function usePanelState(context: PanelExtensionContext, imageTopics: readonly Topic[]) {
+
+    const isInitPanel = useRef(false);
+
     // Define panel settings data
     const [state, setState] = useState<PanelState>(() => {
         const initialState = context.initialState as Partial<PanelState>;
@@ -108,6 +111,34 @@ export function usePanelState(context: PanelExtensionContext, imageTopics: reado
         });
 
     }, [imageTopics, actionHandler, context, state]);
+
+    // Default setting data
+    useEffect(() => {
+        if (isInitPanel.current) {
+            return;
+        }
+
+        if (imageTopics.length === 0) {
+            return;
+        }
+        else if (state.data.topic !== undefined) {
+            console.info("Subscribing to topic:", state.data.topic);
+            context.subscribe([{ topic: state.data.topic as string }]);
+            isInitPanel.current = true;
+            return;
+        }
+
+        const topicNames = imageTopics.map((topic) => topic.name);
+        const hasResizeImage = topicNames.includes("/resize/image");
+        const defaultTopic = hasResizeImage ? "/resize/image" : imageTopics[0]?.name;
+
+
+        setState(produce((draft) => {
+            draft.data.topic = defaultTopic;
+        }));
+        isInitPanel.current = true;
+
+    }, [context, state.data.topic, imageTopics]);
 
     return { state, setState };
 }

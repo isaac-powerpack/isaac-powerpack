@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { SensorImage, ImageMessageEvent } from "../types";
 
 
@@ -41,7 +41,7 @@ async function drawImageOnCanvas(img: SensorImage, canvas: HTMLCanvasElement) {
 
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-            const srcIndex = y * step + x * channels;
+            const srcIndex = (y * step) + (x * channels);
             const dstIndex = (y * width + x) * 4;
 
             let r = 0,
@@ -99,7 +99,7 @@ async function drawImageOnCanvas(img: SensorImage, canvas: HTMLCanvasElement) {
 export function useDrawImage(message: ImageMessageEvent | null | undefined) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (message) {
             drawImageOnCanvas((message as any).message, canvasRef.current!).catch(
                 (error: any) => console.log(error),

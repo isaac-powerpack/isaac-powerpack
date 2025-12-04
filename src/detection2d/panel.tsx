@@ -80,7 +80,6 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
 
     return (
         <div style={{ padding: "1rem" }}>
-            <h2>Detection2D Panel</h2>
             <canvas
                 ref={canvasRef}
                 style={{ width: "100%", height: "100%", display: "block" }}

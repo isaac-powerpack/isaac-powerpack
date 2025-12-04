@@ -3,25 +3,24 @@ import { ReactElement, useEffect, useLayoutEffect, useRef, useState } from "reac
 import { createRoot } from "react-dom/client";
 import defaultLabel from "./default.label.json";
 import { ImageMessageEvent } from "./types";
-import { useDrawImage } from "./ui/useDrawImage";
 import { useSettingsPanel } from "./ui/useSettingsPanel";
+import { isValidString } from "../lib/utils/topics";
+import { useRenderImage } from "./ui/useRenderImage";
 
 const DEFAULT_OBJECT_LABEL_VAR_NAME = "ipp_default_object_label";
 
 function Detection2DPanel({ context }: { context: PanelExtensionContext }): ReactElement {
-    const [message, setMessage] = useState<ImageMessageEvent>();
+    const [imgMessage, setImgMessage] = useState<ImageMessageEvent>();
     const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
     const [variables, setVariables] = useState<ReadonlyMap<string, any> | undefined>();
-
     const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
+
     const isInit = useRef(false);
 
 
     const { state } = useSettingsPanel(context, topics);
 
-    const canvasRef = useDrawImage(message);
-
-    //----- Core Panel Rendering Setup -----
+    //----- Panel Initialization -----
     useLayoutEffect(() => {
         context.onRender = (renderState, done) => {
             setRenderDone(() => done);
@@ -29,10 +28,19 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
             setVariables(renderState.variables);
 
             // message frame update
-            if (renderState.currentFrame && renderState.currentFrame.length > 0) {
+            const hasFrame =
+                renderState.currentFrame &&
+                renderState.currentFrame.length > 0 &&
+                isValidString(state.data.imageTopic);
+
+            if (hasFrame) {
                 renderState.currentFrame.forEach((msg: any) => {
-                    if (msg.topic === state?.data?.imageTopic) {
-                        setMessage(msg as ImageMessageEvent);
+                    switch (msg.topic) {
+                        case state.data.imageTopic:
+                            setImgMessage(msg as ImageMessageEvent);
+                            break;
+                        default:
+                            break;
                     }
                 });
             }
@@ -41,6 +49,9 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         context.watch("variables");
         context.watch("currentFrame");
     }, [context, state.data.imageTopic]);
+
+    const canvasRef = useRenderImage(imgMessage);
+
 
     // init variables
     useLayoutEffect(() => {
@@ -57,7 +68,7 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         }
 
         isInit.current = true;
-    }, [context, variables]);
+    }, [variables]);
 
 
     // notify painting render done

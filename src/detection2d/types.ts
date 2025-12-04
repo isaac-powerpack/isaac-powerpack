@@ -42,7 +42,7 @@ export type Detection2DArray = {
   detections: Detection2D[];
 };
 
-export type SensorImage = {
+export interface SensorImage {
   header: Header;
 
   /** image height, number of rows */

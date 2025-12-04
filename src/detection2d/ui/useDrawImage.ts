@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { SensorImage, ImageMessageEvent } from "../types";
 
 
@@ -99,7 +99,7 @@ async function drawImageOnCanvas(img: SensorImage, canvas: HTMLCanvasElement) {
 export function useDrawImage(message: ImageMessageEvent | null | undefined) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (message) {
             drawImageOnCanvas((message as any).message, canvasRef.current!).catch(
                 (error: any) => console.log(error),

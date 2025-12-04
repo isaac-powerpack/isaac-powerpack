@@ -4,22 +4,20 @@ import { createRoot } from "react-dom/client";
 import defaultLabel from "./default.label.json";
 import { ImageMessageEvent } from "./types";
 import { useDrawImage } from "./ui/useDrawImage";
-import { usePanelState } from "./ui/usePanelState";
-import { useFilterTopics } from "../lib/hooks/useFilterTopics";
+import { useSettingsPanel } from "./ui/useSettingsPanel";
 
 const DEFAULT_OBJECT_LABEL_VAR_NAME = "ipp_default_object_label";
 
 function Detection2DPanel({ context }: { context: PanelExtensionContext }): ReactElement {
     const [message, setMessage] = useState<ImageMessageEvent>();
-    const [topics, setTopics] = useState<readonly Topic[] | undefined>();
+    const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
     const [variables, setVariables] = useState<ReadonlyMap<string, any> | undefined>();
 
     const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
     const isInit = useRef(false);
 
-    const imageTopics = useFilterTopics(topics, ["sensor_msgs/msg/Image"]);
 
-    const { state } = usePanelState(context, imageTopics);
+    const { state } = useSettingsPanel(context, topics);
 
     const canvasRef = useDrawImage(message);
 
@@ -27,13 +25,13 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
     useLayoutEffect(() => {
         context.onRender = (renderState, done) => {
             setRenderDone(() => done);
-            setTopics(renderState.topics);
+            setTopics(renderState.topics ?? []);
             setVariables(renderState.variables);
 
             // message frame update
             if (renderState.currentFrame && renderState.currentFrame.length > 0) {
                 renderState.currentFrame.forEach((msg: any) => {
-                    if (msg.topic === state?.data?.topic) {
+                    if (msg.topic === state?.data?.imageTopic) {
                         setMessage(msg as ImageMessageEvent);
                     }
                 });
@@ -42,7 +40,7 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         context.watch("topics");
         context.watch("variables");
         context.watch("currentFrame");
-    }, [context, state.data.topic]);
+    }, [context, state.data.imageTopic]);
 
     // init variables
     useLayoutEffect(() => {

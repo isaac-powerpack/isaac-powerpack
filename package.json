@@ -34,6 +34,8 @@
     "typescript": "5.9.3"
   },
   "dependencies": {
-    "@foxglove/schemas": "^1.8.0"
+    "@foxglove/schemas": "^1.8.0",
+    "konva": "^9.3.22",
+    "react-konva": "^18.2.10"
   }
 }

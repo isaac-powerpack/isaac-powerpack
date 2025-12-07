@@ -3,9 +3,11 @@ import { ReactElement, useEffect, useLayoutEffect, useRef, useState } from "reac
 import { createRoot } from "react-dom/client";
 import defaultLabel from "./default.label.json";
 import { ImageMessageEvent } from "./types";
-import { useSettingsPanel } from "./ui/useSettingsPanel";
+import { useSettingsPanel } from "./hooks/useSettingsPanel";
 import { isValidString } from "../lib/utils/topics";
-import { useRenderImage } from "./ui/useRenderImage";
+import { useRenderImage } from "./hooks/useRenderImage";
+import { Canvas } from "./comps/Canvas";
+import { ImageLayer } from "./comps/ImageLayer";
 
 const DEFAULT_OBJECT_LABEL_VAR_NAME = "ipp_default_object_label";
 
@@ -50,7 +52,7 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         context.watch("currentFrame");
     }, [context, state.data.imageTopic]);
 
-    const canvasRef = useRenderImage(imgMessage);
+    const imageCanvas = useRenderImage(imgMessage);
 
 
     // init variables
@@ -79,12 +81,9 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
 
 
     return (
-        <div style={{ padding: "1rem" }}>
-            <canvas
-                ref={canvasRef}
-                style={{ width: "100%", height: "100%", display: "block" }}
-            />
-        </div>
+        <Canvas>
+            <ImageLayer image={imageCanvas} />
+        </Canvas>
     );
 }
 

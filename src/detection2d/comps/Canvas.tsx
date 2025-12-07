@@ -1,28 +1,26 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Stage } from "react-konva";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import Konva from "konva";
+import { create } from "zustand";
 
-type CanvasContextValue = {
+type CanvasStore = {
     dimensions: { width: number; height: number };
+    setDimensions: (dimensions: { width: number; height: number }) => void;
 };
 
-const CanvasContext = createContext<CanvasContextValue | null>(null);
-
-export function useCanvasContext() {
-    const context = useContext(CanvasContext);
-    if (!context) {
-        throw new Error("useCanvasContext must be used within a Canvas");
-    }
-    return context;
-}
+export const useCanvasStore = create<CanvasStore>((set) => ({
+    dimensions: { width: 0, height: 0 },
+    setDimensions: (dimensions) => set({ dimensions }),
+}));
 
 type CanvasProps = {
     children?: React.ReactNode;
 };
 
 export function Canvas({ children }: CanvasProps) {
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+    const setDimensions = useCanvasStore((state) => state.setDimensions);
+    const dimensions = useCanvasStore((state) => state.dimensions);
     const containerRef = useRef<HTMLDivElement>(null);
     const stageRef = useRef<Konva.Stage>(null);
 
@@ -47,44 +45,42 @@ export function Canvas({ children }: CanvasProps) {
 
         resizeObserver.observe(container);
         return () => resizeObserver.disconnect();
-    }, []);
+    }, [setDimensions]);
 
     return (
-        <CanvasContext.Provider value={{ dimensions }}>
-            <div
-                ref={containerRef}
-                style={{
-                    width: "100%",
-                    height: "100%",
-                    overflow: "hidden",
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                }}
+        <div
+            ref={containerRef}
+            style={{
+                width: "100%",
+                height: "100%",
+                overflow: "hidden",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+            }}
+        >
+            <TransformWrapper
+                initialScale={1}
+                minScale={0.1}
+                maxScale={10}
+                centerOnInit
+                doubleClick={{ mode: "reset" }}
             >
-                <TransformWrapper
-                    initialScale={1}
-                    minScale={0.1}
-                    maxScale={10}
-                    centerOnInit
-                    doubleClick={{ mode: "reset" }}
+                <TransformComponent
+                    wrapperStyle={{ width: "100%", height: "100%" }}
+                    contentStyle={{ width: "100%", height: "100%" }}
                 >
-                    <TransformComponent
-                        wrapperStyle={{ width: "100%", height: "100%" }}
-                        contentStyle={{ width: "100%", height: "100%" }}
+                    <Stage
+                        ref={stageRef}
+                        width={dimensions.width}
+                        height={dimensions.height}
                     >
-                        <Stage
-                            ref={stageRef}
-                            width={dimensions.width}
-                            height={dimensions.height}
-                        >
-                            {children}
-                        </Stage>
-                    </TransformComponent>
-                </TransformWrapper>
-            </div>
-        </CanvasContext.Provider>
+                        {children}
+                    </Stage>
+                </TransformComponent>
+            </TransformWrapper>
+        </div>
     );
 }

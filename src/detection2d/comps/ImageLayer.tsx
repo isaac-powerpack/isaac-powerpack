@@ -1,25 +1,26 @@
 import { Layer, Image } from "react-konva";
-import { useCanvasContext } from "./Canvas";
+import { useCanvasStore } from "./Canvas";
+import { calculateImageFit } from "../../lib/utils/images";
+import { useMemo } from "react";
 
 type ImageLayerProps = {
     image?: HTMLCanvasElement | null;
 };
 
 export function ImageLayer({ image }: ImageLayerProps) {
-    const { dimensions } = useCanvasContext();
+    const dimensions = useCanvasStore((state) => state.dimensions);
 
-    // Calculate scale to fit image width to container
-    const imageWidth = image?.width ?? 1;
-    const imageHeight = image?.height ?? 1;
-    const scale = dimensions.width > 0 ? dimensions.width / imageWidth : 1;
-    const scaledHeight = imageHeight * scale;
+    const { scale, x, y } = useMemo(() => calculateImageFit(
+        dimensions,
+        image
+    ), [dimensions, image]);
 
     return (
         <Layer
             scaleX={scale}
             scaleY={scale}
-            x={0}
-            y={(dimensions.height - scaledHeight) / 2}
+            x={x}
+            y={y}
         >
             {image && <Image image={image} />}
         </Layer>

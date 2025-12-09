@@ -1,24 +1,32 @@
 import { PanelExtensionContext, Topic } from "@foxglove/extension";
-import { ReactElement, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import defaultLabel from "./default.label.json";
-import { ImageMessageEvent } from "./types";
+import { Detection2DArrayMessageEvent, ImageMessageEvent } from "./types";
 import { useSettingsPanel } from "./hooks/useSettingsPanel";
 import { isValidString } from "../lib/utils/topics";
 import { useRenderImage } from "./hooks/useRenderImage";
 import { Canvas } from "./comps/Canvas";
 import { ImageLayer } from "./comps/ImageLayer";
+import { detection2DArrayConverter } from "./converter";
+import { BoundingBoxLayer } from "./comps/BoundingBoxLayer";
 
 const DEFAULT_OBJECT_LABEL_VAR_NAME = "ipp_default_object_label";
 
 function Detection2DPanel({ context }: { context: PanelExtensionContext }): ReactElement {
-    const [imgMessage, setImgMessage] = useState<ImageMessageEvent>();
+    const [imgEvent, setImgEvent] = useState<ImageMessageEvent>();
+    const [detection2dArrayEvent, setDetection2dArrayEvent] = useState<Detection2DArrayMessageEvent>();
+
     const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
     const [variables, setVariables] = useState<ReadonlyMap<string, any> | undefined>();
     const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
-
     const isInit = useRef(false);
-
+    const imgAnnotations = useMemo(() => {
+        if (!detection2dArrayEvent) {
+            return undefined;
+        }
+        return detection2DArrayConverter(detection2dArrayEvent.message);
+    }, [detection2dArrayEvent]);
 
     const { state } = useSettingsPanel(context, topics);
 
@@ -39,7 +47,10 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
                 renderState.currentFrame.forEach((msg: any) => {
                     switch (msg.topic) {
                         case state.data.imageTopic:
-                            setImgMessage(msg as ImageMessageEvent);
+                            setImgEvent(msg);
+                            break;
+                        case state.data.detectionTopic:
+                            setDetection2dArrayEvent(msg);
                             break;
                         default:
                             break;
@@ -52,7 +63,7 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         context.watch("currentFrame");
     }, [context, state.data.imageTopic]);
 
-    const imageCanvas = useRenderImage(imgMessage);
+    const imageCanvas = useRenderImage(imgEvent);
 
 
     // init variables
@@ -72,17 +83,15 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         isInit.current = true;
     }, [variables]);
 
-
     // notify painting render done
     useEffect(() => {
         renderDone?.();
     }, [renderDone]);
 
-
-
     return (
         <Canvas>
             <ImageLayer image={imageCanvas} />
+            <BoundingBoxLayer image={imageCanvas} annotations={imgAnnotations} />
         </Canvas>
     );
 }

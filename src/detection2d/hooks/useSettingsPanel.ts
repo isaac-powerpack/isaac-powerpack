@@ -9,6 +9,7 @@ const DEFAULT_OBJECT_LABEL_VAR_NAME = "ipp_default_object_label";
 export type PanelState = {
     data: {
         imageTopic?: string,
+        detectionTopic?: string,
         // reference string to variable name
         objectLabelData?: string,
     },
@@ -23,6 +24,7 @@ export type PanelState = {
 export function useSettingsPanel(context: PanelExtensionContext, topics: readonly Topic[] | undefined) {
 
     const allImageTopics = useFilterTopics(topics, ["sensor_msgs/msg/Image"]);
+    const allDetectionTopics = useFilterTopics(topics, ["vision_msgs/msg/Detection2DArray"]);
 
 
     // Define panel settings data
@@ -31,6 +33,7 @@ export function useSettingsPanel(context: PanelExtensionContext, topics: readonl
         return {
             data: {
                 imageTopic: initialState?.data?.imageTopic,
+                detectionTopic: initialState?.data?.detectionTopic,
                 objectLabelData: initialState?.data?.objectLabelData ?? DEFAULT_OBJECT_LABEL_VAR_NAME,
             },
             display: {
@@ -57,6 +60,7 @@ export function useSettingsPanel(context: PanelExtensionContext, topics: readonl
         context.saveState(state);
 
         const topicOptions = allImageTopics.map((topic) => ({ value: topic.name, label: topic.name }));
+        const detectionTopicOptions = allDetectionTopics.map((topic) => ({ value: topic.name, label: topic.name }));
 
         context.updatePanelSettingsEditor({
             actionHandler,
@@ -69,6 +73,14 @@ export function useSettingsPanel(context: PanelExtensionContext, topics: readonl
                             input: "select",
                             options: topicOptions,
                             value: state.data.imageTopic,
+                            help: "Topic to subscribe for image data. (sensor_msgs/msg/Image)",
+                        },
+                        detectionTopic: {
+                            label: "Detection Topic",
+                            input: "select",
+                            options: detectionTopicOptions,
+                            value: state.data.detectionTopic,
+                            help: "Topic to subscribe for 2D detection data. (vision_msgs/msg/Detection2DArray)",
                         },
 
                         objectLabelData: {
@@ -107,7 +119,7 @@ export function useSettingsPanel(context: PanelExtensionContext, topics: readonl
             }
         });
 
-    }, [allImageTopics, actionHandler, context, state]);
+    }, [allImageTopics, allDetectionTopics, actionHandler, context, state]);
 
     // Default imageTopic
     useEffect(() => {
@@ -125,15 +137,37 @@ export function useSettingsPanel(context: PanelExtensionContext, topics: readonl
 
     }, [state.data.imageTopic, allImageTopics]);
 
-    // Subscribe to topic changes
+    // Default detectionTopic
     useEffect(() => {
-        if (state.data.imageTopic === undefined) {
-            console.warn("No topic selected for subscription.");
+        if (state.data.detectionTopic !== undefined || allDetectionTopics.length === 0) {
             return;
         }
-        console.info("Subscribing to topic:", state.data.imageTopic);
-        context.subscribe([{ topic: state.data.imageTopic as string }]);
-    }, [context, state.data.imageTopic]);
+
+        setState(produce((draft) => {
+            draft.data.detectionTopic = allDetectionTopics[0]?.name;
+        }));
+
+    }, [state.data.detectionTopic, allDetectionTopics]);
+
+    // Subscribe to topic changes
+    useEffect(() => {
+        const subscriptions: { topic: string }[] = [];
+
+        if (state.data.imageTopic) {
+            subscriptions.push({ topic: state.data.imageTopic });
+        }
+        if (state.data.detectionTopic) {
+            subscriptions.push({ topic: state.data.detectionTopic });
+        }
+
+        if (subscriptions.length === 0) {
+            console.warn("No topics selected for subscription.");
+            return;
+        }
+
+        console.info("Subscribing to topics:", subscriptions.map(s => s.topic));
+        context.subscribe(subscriptions);
+    }, [context, state.data.imageTopic, state.data.detectionTopic]);
 
     return { state, setState };
 }

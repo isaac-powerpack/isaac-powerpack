@@ -1,3 +1,4 @@
+import { MessageEvent } from "@foxglove/extension";
 import { Pose, Vector2 } from "@foxglove/schemas";
 
 // ROS2 & Foxglove message type definitions
@@ -44,12 +45,8 @@ export type Detection2DArray = {
 
 export interface SensorImage {
   header: Header;
-
-  /** image height, number of rows */
-  height: number;        // uint32
-
-  /** image width, number of columns */
-  width: number;         // uint32
+  height: number;
+  width: number;
 
   /**
    * Encoding of pixels -- channel meaning, ordering, size.
@@ -57,17 +54,16 @@ export interface SensorImage {
    */
   encoding: string;
 
-  /** is this data big-endian? */
-  is_bigendian: number;  // uint8 (0 or 1)
+  /** is this data big-endian */
+  is_bigendian: number;  // (0 or 1)
 
   /** Full row length in bytes */
-  step: number;          // uint32
+  step: number;
 
   /** actual image data, size is (step * height) bytes */
   data: number[];        // uint8[]
-  // If you prefer a typed array:
-  // data: Uint8Array;
 }
 
 // Custom event message
 export type ImageMessageEvent = MessageEvent<SensorImage>;
+export type Detection2DArrayMessageEvent = MessageEvent<Detection2DArray>;

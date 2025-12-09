@@ -1,9 +1,15 @@
-import { ImageAnnotations, Vector2 } from "@foxglove/schemas";
+import { CircleAnnotation, ImageAnnotations, PointsAnnotation, TextAnnotation, Vector2 } from "@foxglove/schemas";
 
 import defaultLabel from "./default.label.json";
 import { Detection2DArray } from "./types";
 
-function detection2DArrayConverter(msg: Detection2DArray): Partial<ImageAnnotations> {
+type ConverterOptions = {
+  circles?: Partial<CircleAnnotation>;
+  points?: Partial<PointsAnnotation>;
+  texts?: Partial<TextAnnotation> & { y_offset?: number };
+}
+
+function detection2DArrayConverter(msg: Detection2DArray, options?: ConverterOptions): Partial<ImageAnnotations> {
 
   const objectLabel = defaultLabel;
 
@@ -13,7 +19,7 @@ function detection2DArrayConverter(msg: Detection2DArray): Partial<ImageAnnotati
     timestamp,
     text,
     position,
-    font_size: 12,
+    font_size: options?.texts?.font_size ?? 12,
     text_color: { r: 1, g: 1, b: 1, a: 1 },
     background_color: { r: 0, g: 0, b: 0, a: 0.7 },
   });
@@ -59,19 +65,18 @@ function detection2DArrayConverter(msg: Detection2DArray): Partial<ImageAnnotati
     const left = centerX - bbox.size_x / 2;
     const bottom = centerY + bbox.size_y / 2;
 
-
-
     const output = []
-
 
     const objectName = labels[classId] ?? "unknown";
     output.push(textLabel(timestamp, objectName, { x: left, y: bottom }));
 
     let mainText = "";
-    mainText += `id:${classId}`;
+    mainText += `ID:${classId}`;
     const scoreValue = score || 0;
     mainText += `${mainText ? " " : ""}(${(scoreValue * 100).toFixed(1)}%)`;
-    output.push(textLabel(timestamp, mainText, { x: left, y: top + 12 }));
+
+    const yOffset = options?.texts?.y_offset ?? 12;
+    output.push(textLabel(timestamp, mainText, { x: left, y: top + yOffset }));
 
     return output;
   });

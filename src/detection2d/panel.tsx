@@ -21,11 +21,17 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
     const [variables, setVariables] = useState<ReadonlyMap<string, any> | undefined>();
     const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
     const isInit = useRef(false);
+
     const imgAnnotations = useMemo(() => {
         if (!detection2dArrayEvent) {
             return undefined;
         }
-        return detection2DArrayConverter(detection2dArrayEvent.message);
+
+        const options = {
+            texts: { font_size: 11, y_offset: -15 }
+        }
+
+        return detection2DArrayConverter(detection2dArrayEvent.message, options);
     }, [detection2dArrayEvent]);
 
     const { state } = useSettingsPanel(context, topics);

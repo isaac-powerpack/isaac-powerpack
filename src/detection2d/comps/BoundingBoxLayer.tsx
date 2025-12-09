@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { Layer, Line, Circle, Text } from "react-konva";
-import type { ImageAnnotations } from "@foxglove/schemas";
+import { Layer, Line, Circle, Label, Tag, Text } from "react-konva";
+import type { Color, ImageAnnotations } from "@foxglove/schemas";
 import { useCanvasStore } from "./Canvas";
 import { calculateImageFit } from "../../lib/utils/images";
 
@@ -8,6 +8,10 @@ type BoundingBoxLayerProps = {
     image?: HTMLCanvasElement | null;
     annotations?: Partial<ImageAnnotations>;
 };
+
+function toRgba({ r, g, b, a }: Color): string {
+    return `rgba(${r * 255}, ${g * 255}, ${b * 255}, ${a})`;
+}
 
 export function BoundingBoxLayer({ annotations, image }: BoundingBoxLayerProps) {
     if (!annotations) {
@@ -25,56 +29,39 @@ export function BoundingBoxLayer({ annotations, image }: BoundingBoxLayerProps) 
 
     return (
         <Layer scaleX={scale} scaleY={scale} x={x} y={y}>
-            {points?.map((point, index) => {
-                const flatPoints = point.points.flatMap((p) => [p.x, p.y]);
-                const { r, g, b, a } = point.outline_color;
-                const stroke = `rgba(${r * 255}, ${g * 255}, ${b * 255}, ${a})`;
+            {points?.map((point, index) => (
+                <Line
+                    key={`points-${index}`}
+                    points={point.points.flatMap((p) => [p.x, p.y])}
+                    stroke={toRgba(point.outline_color)}
+                    strokeWidth={point.thickness}
+                    closed={point.type === 2}
+                />
+            ))}
 
-                return (
-                    <Line
-                        key={`points-${index}`}
-                        points={flatPoints}
-                        stroke={stroke}
-                        strokeWidth={point.thickness}
-                        closed={point.type === 2} // LINE_LOOP
-                    />
-                );
-            })}
+            {circles?.map((circle, index) => (
+                <Circle
+                    key={`circle-${index}`}
+                    x={circle.position.x}
+                    y={circle.position.y}
+                    radius={circle.diameter / 2}
+                    stroke={toRgba(circle.outline_color)}
+                    strokeWidth={circle.thickness}
+                    fill={toRgba(circle.fill_color)}
+                />
+            ))}
 
-            {circles?.map((circle, index) => {
-                const { r, g, b, a } = circle.outline_color;
-                const stroke = `rgba(${r * 255}, ${g * 255}, ${b * 255}, ${a})`;
-                const { r: fr, g: fg, b: fb, a: fa } = circle.fill_color;
-                const fill = `rgba(${fr * 255}, ${fg * 255}, ${fb * 255}, ${fa})`;
-
-                return (
-                    <Circle
-                        key={`circle-${index}`}
-                        x={circle.position.x}
-                        y={circle.position.y}
-                        radius={circle.diameter / 2}
-                        stroke={stroke}
-                        strokeWidth={circle.thickness}
-                        fill={fill}
-                    />
-                );
-            })}
-
-            {texts?.map((text, index) => {
-                const { r, g, b, a } = text.text_color;
-                const fill = `rgba(${r * 255}, ${g * 255}, ${b * 255}, ${a})`;
-
-                return (
+            {texts?.map((text, index) => (
+                <Label key={`text-${index}`} x={text.position.x} y={text.position.y}>
+                    <Tag fill={toRgba(text.background_color)} />
                     <Text
-                        key={`text-${index}`}
-                        x={text.position.x}
-                        y={text.position.y}
                         text={text.text}
-                        fill={fill}
+                        fill={toRgba(text.text_color)}
                         fontSize={text.font_size}
+                        padding={2}
                     />
-                );
-            })}
+                </Label>
+            ))}
         </Layer>
     );
 }

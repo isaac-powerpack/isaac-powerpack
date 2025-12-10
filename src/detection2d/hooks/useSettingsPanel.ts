@@ -25,13 +25,13 @@ export type PanelState = {
 export function useSettingsPanel(
   context: PanelExtensionContext,
   topics: readonly Topic[] | undefined,
-) {
+): { state: PanelState; setState: React.Dispatch<React.SetStateAction<PanelState>> } {
   const allImageTopics = useFilterTopics(topics, ["sensor_msgs/msg/Image"]);
   const allDetectionTopics = useFilterTopics(topics, ["vision_msgs/msg/Detection2DArray"]);
 
   // Define panel settings data
   const [state, setState] = useState<PanelState>(() => {
-    const initialState = context.initialState as Partial<PanelState>;
+    const initialState = context.initialState as Partial<PanelState> | undefined;
     return {
       data: {
         imageTopic: initialState?.data?.imageTopic,
@@ -49,17 +49,14 @@ export function useSettingsPanel(
   });
 
   // Define Panel Settings UI & Handlers
-  const actionHandler = useCallback(
-    (action: SettingsTreeAction) => {
-      if (action.action === "update") {
-        const { path, value } = action.payload;
-        setState(produce((draft) => set(draft, path, value)));
-      } else if (action.action === "perform-node-action") {
-        console.log("perform-node-action action");
-      }
-    },
-    [context],
-  );
+  const actionHandler = useCallback((action: SettingsTreeAction) => {
+    if (action.action === "update") {
+      const { path, value } = action.payload;
+      setState(produce((draft) => set(draft, path, value)));
+    } else {
+      console.log("perform-node-action action");
+    }
+  }, []);
 
   useEffect(() => {
     context.saveState(state);
@@ -138,7 +135,7 @@ export function useSettingsPanel(
 
   // Default imageTopic
   useEffect(() => {
-    if (state.data.imageTopic !== undefined || allImageTopics.length === 0) {
+    if (state.data.imageTopic != undefined || allImageTopics.length === 0) {
       return;
     }
 
@@ -155,7 +152,7 @@ export function useSettingsPanel(
 
   // Default detectionTopic
   useEffect(() => {
-    if (state.data.detectionTopic !== undefined || allDetectionTopics.length === 0) {
+    if (state.data.detectionTopic != undefined || allDetectionTopics.length === 0) {
       return;
     }
 

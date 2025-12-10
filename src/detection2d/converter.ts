@@ -14,7 +14,7 @@ type ConverterOptions = {
   circles?: Partial<CircleAnnotation>;
   points?: Partial<PointsAnnotation>;
   texts?: Partial<TextAnnotation> & { y_offset?: number };
-  objectLabels?: ReadonlyMap<string, any>;
+  objectLabels?: ReadonlyMap<string, string>;
   state?: PanelState;
 };
 
@@ -32,7 +32,7 @@ function detection2DArrayConverter(
   const isShowScore = options?.state?.display.score ?? true;
   const isShowObjectLabel = options?.state?.display.objectLabel ?? true;
 
-  const textLabel = (timestamp: any, text: string, position: Vector2) => ({
+  const createTextLabel = (text: string, position: Vector2) => ({
     timestamp,
     text,
     position,
@@ -74,8 +74,8 @@ function detection2DArrayConverter(
     const bbox = detection.bbox;
     const centerX = bbox.center.position.x;
     const centerY = bbox.center.position.y;
-    const classId = detection.results[0]?.hypothesis?.class_id ?? "unknown";
-    const score = detection.results[0]?.hypothesis?.score;
+    const classId = detection.results[0]?.hypothesis.class_id ?? "unknown";
+    const score = detection.results[0]?.hypothesis.score;
     const top = centerY - bbox.size_y / 2;
     const left = centerX - bbox.size_x / 2;
     const bottom = centerY + bbox.size_y / 2;
@@ -84,7 +84,7 @@ function detection2DArrayConverter(
 
     if (isShowObjectLabel) {
       const objectName = labels.get(classId) ?? "unknown";
-      output.push(textLabel(timestamp, objectName, { x: left, y: bottom }));
+      output.push(createTextLabel(objectName, { x: left, y: bottom }));
     }
 
     if (isShowId) {
@@ -92,14 +92,14 @@ function detection2DArrayConverter(
     }
 
     if (isShowScore) {
-      const scoreValue = score || 0;
-      mainText += `${mainText ? " " : ""}(${(scoreValue * 100).toFixed(1)}%)`;
+      const scoreValue = score ?? 0;
+      mainText += `${mainText !== "" ? " " : ""}(${(scoreValue * 100).toFixed(1)}%)`;
     }
 
     // mainText is not ""
     if (mainText !== "") {
       const yOffset = options?.texts?.y_offset ?? 12;
-      output.push(textLabel(timestamp, mainText, { x: left, y: top + yOffset }));
+      output.push(createTextLabel(mainText, { x: left, y: top + yOffset }));
     }
 
     return output;

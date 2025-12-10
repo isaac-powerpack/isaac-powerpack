@@ -73,7 +73,7 @@ function decodeImageToCanvas(img: SensorImage): HTMLCanvasElement | null {
   return canvas;
 }
 
-export function useRenderImage(message: ImageMessageEvent | undefined) {
+export function useRenderImage(message: ImageMessageEvent | undefined): HTMLCanvasElement | null {
   const [imageCanvas, setImageCanvas] = useState<HTMLCanvasElement | null>(null);
   const prevMessageRef = useRef<ImageMessageEvent | undefined>();
 
@@ -89,7 +89,7 @@ export function useRenderImage(message: ImageMessageEvent | undefined) {
     }
     prevMessageRef.current = message;
 
-    const canvas = decodeImageToCanvas((message as any).message);
+    const canvas = decodeImageToCanvas(message.message);
     setImageCanvas(canvas);
   }, [message]);
 

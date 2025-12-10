@@ -8,7 +8,7 @@ type ImageLayerProps = {
   image?: HTMLCanvasElement | null;
 };
 
-export function ImageLayer({ image }: ImageLayerProps) {
+export function ImageLayer({ image }: ImageLayerProps): React.JSX.Element {
   const dimensions = useCanvasStore((state) => state.dimensions);
 
   const { scale, x, y } = useMemo(() => calculateImageFit(dimensions, image), [dimensions, image]);

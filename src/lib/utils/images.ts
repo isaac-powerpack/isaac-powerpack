@@ -1,14 +1,14 @@
 export type Dimensions = {
-    width: number;
-    height: number;
+  width: number;
+  height: number;
 };
 
 export type ImageDimensions = Partial<Dimensions> | HTMLCanvasElement | null;
 
 export type ImageFitResult = {
-    scale: number;
-    x: number;
-    y: number;
+  scale: number;
+  x: number;
+  y: number;
 };
 
 /**
@@ -16,14 +16,14 @@ export type ImageFitResult = {
  * The image is scaled to fit the container width and centered vertically.
  */
 export function calculateImageFit(container: Dimensions, image?: ImageDimensions): ImageFitResult {
-    const imageWidth = image?.width ?? 1;
-    const imageHeight = image?.height ?? 1;
-    const scale = container.width > 0 ? container.width / imageWidth : 1;
-    const scaledHeight = imageHeight * scale;
+  const imageWidth = image?.width ?? 1;
+  const imageHeight = image?.height ?? 1;
+  const scale = container.width > 0 ? container.width / imageWidth : 1;
+  const scaledHeight = imageHeight * scale;
 
-    return {
-        scale,
-        x: 0,
-        y: (container.height - scaledHeight) / 2,
-    };
+  return {
+    scale,
+    x: 0,
+    y: (container.height - scaledHeight) / 2,
+  };
 }

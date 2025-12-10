@@ -20,7 +20,7 @@ type CanvasProps = {
   children?: React.ReactNode;
 };
 
-export function Canvas({ children }: CanvasProps) {
+export function Canvas({ children }: CanvasProps): React.JSX.Element {
   const setDimensions = useCanvasStore((state) => state.setDimensions);
   const dimensions = useCanvasStore((state) => state.dimensions);
   const containerRef = useRef<HTMLDivElement>(null);

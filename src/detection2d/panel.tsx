@@ -1,4 +1,4 @@
-import { PanelExtensionContext, Topic } from "@foxglove/extension";
+import { PanelExtensionContext, Topic, VariableValue } from "@foxglove/extension";
 import { ReactElement, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -18,7 +18,7 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
     useState<Detection2DArrayMessageEvent>();
 
   const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
-  const [variables, setVariables] = useState<ReadonlyMap<string, any> | undefined>();
+  const [variables, setVariables] = useState<ReadonlyMap<string, VariableValue> | undefined>();
   const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
 
   const { state } = useSettingsPanel(context, topics);
@@ -43,28 +43,28 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
     context.onRender = (renderState, done) => {
       setRenderDone(() => done);
       setTopics(renderState.topics ?? []);
-      setVariables(renderState.variables);
+      setVariables(renderState.variables as ReadonlyMap<string, VariableValue>);
 
       // message frame update
       const hasFrame =
-        renderState.currentFrame &&
+        renderState.currentFrame != undefined &&
         renderState.currentFrame.length > 0 &&
         isValidString(state.data.imageTopic) &&
         isValidString(state.data.detectionTopic);
 
       if (hasFrame) {
-        renderState.currentFrame.forEach((msg: any) => {
+        for (const msg of renderState.currentFrame) {
           switch (msg.topic) {
             case state.data.imageTopic:
-              setImgEvent(msg);
+              setImgEvent(msg as ImageMessageEvent);
               break;
             case state.data.detectionTopic:
-              setDetection2dArrayEvent(msg);
+              setDetection2dArrayEvent(msg as Detection2DArrayMessageEvent);
               break;
             default:
               break;
           }
-        });
+        }
       }
     };
     context.watch("topics");

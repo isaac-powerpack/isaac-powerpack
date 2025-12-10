@@ -1,7 +1,6 @@
 import { PanelExtensionContext, Topic } from "@foxglove/extension";
-import { ReactElement, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { ReactElement, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import defaultLabel from "./default.label.json";
 import { Detection2DArrayMessageEvent, ImageMessageEvent } from "./types";
 import { useSettingsPanel } from "./hooks/useSettingsPanel";
 import { isValidString } from "../lib/utils/topics";
@@ -10,8 +9,8 @@ import { Canvas } from "./comps/Canvas";
 import { ImageLayer } from "./comps/ImageLayer";
 import { detection2DArrayConverter } from "./converter";
 import { BoundingBoxLayer } from "./comps/BoundingBoxLayer";
+import { useDetectionLabel } from "./hooks/useDetectionLabel";
 
-const DEFAULT_OBJECT_LABEL_VAR_NAME = "ipp_default_object_label";
 
 function Detection2DPanel({ context }: { context: PanelExtensionContext }): ReactElement {
     const [imgEvent, setImgEvent] = useState<ImageMessageEvent>();
@@ -20,7 +19,9 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
     const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
     const [variables, setVariables] = useState<ReadonlyMap<string, any> | undefined>();
     const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
-    const isInit = useRef(false);
+
+    const { state } = useSettingsPanel(context, topics);
+    const objectLabels = useDetectionLabel(context, variables, state.data.objectLabelData);
 
     const imgAnnotations = useMemo(() => {
         if (!detection2dArrayEvent) {
@@ -28,13 +29,13 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         }
 
         const options = {
-            texts: { font_size: 11, y_offset: -15 }
+            texts: { font_size: 11, y_offset: -15 },
+            objectLabels,
         }
 
         return detection2DArrayConverter(detection2dArrayEvent.message, options);
-    }, [detection2dArrayEvent]);
+    }, [detection2dArrayEvent, objectLabels]);
 
-    const { state } = useSettingsPanel(context, topics);
 
     //----- Panel Initialization -----
     useLayoutEffect(() => {
@@ -47,7 +48,8 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
             const hasFrame =
                 renderState.currentFrame &&
                 renderState.currentFrame.length > 0 &&
-                isValidString(state.data.imageTopic);
+                isValidString(state.data.imageTopic) &&
+                isValidString(state.data.detectionTopic);
 
             if (hasFrame) {
                 renderState.currentFrame.forEach((msg: any) => {
@@ -67,27 +69,9 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         context.watch("topics");
         context.watch("variables");
         context.watch("currentFrame");
-    }, [context, state.data.imageTopic]);
+    }, [context, state.data.imageTopic, state.data.detectionTopic]);
 
     const imageCanvas = useRenderImage(imgEvent);
-
-
-    // init variables
-    useLayoutEffect(() => {
-        if (isInit.current) {
-            console.log("do nothing, already init");
-            return;
-        }
-
-        console.log("init object label variable name")
-        const defaultObjectLabelVar = variables?.get(DEFAULT_OBJECT_LABEL_VAR_NAME);
-
-        if (!defaultObjectLabelVar) {
-            context.setVariable(DEFAULT_OBJECT_LABEL_VAR_NAME, defaultLabel);
-        }
-
-        isInit.current = true;
-    }, [variables]);
 
     // notify painting render done
     useEffect(() => {

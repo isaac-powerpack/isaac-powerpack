@@ -3,8 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import { produce } from "immer";
 import { set } from "lodash";
 import { useFilterTopics } from "../../lib/hooks/useFilterTopics";
+import { DEFAULT_OBJECT_LABEL_VAR_NAME } from "../constants";
 
-const DEFAULT_OBJECT_LABEL_VAR_NAME = "ipp_default_object_label";
 
 export type PanelState = {
     data: {
@@ -87,7 +87,7 @@ export function useSettingsPanel(context: PanelExtensionContext, topics: readonl
                             label: "Object Label Data",
                             input: "string",
                             value: state.data.objectLabelData,
-                            help: "Variable name pointed to the data mapping between id and label. Specify \"default\" or leave empty to use the default extension mapping data.",
+                            help: `Variable name pointed to the data mapping between id and label. Specify "${DEFAULT_OBJECT_LABEL_VAR_NAME}" to use the default extension mapping data.`,
                         },
                     }
                 },

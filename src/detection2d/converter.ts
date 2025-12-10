@@ -1,17 +1,22 @@
 import { CircleAnnotation, ImageAnnotations, PointsAnnotation, TextAnnotation, Vector2 } from "@foxglove/schemas";
 
-import defaultLabel from "./default.label.json";
+import defaultLabelsJson from "./default.label.json";
 import { Detection2DArray } from "./types";
 
 type ConverterOptions = {
   circles?: Partial<CircleAnnotation>;
   points?: Partial<PointsAnnotation>;
   texts?: Partial<TextAnnotation> & { y_offset?: number };
+  objectLabels?: ReadonlyMap<string, any>;
 }
+
+const defaultLabels: ReadonlyMap<string, string> = new Map(
+  Object.entries(defaultLabelsJson)
+);
 
 function detection2DArrayConverter(msg: Detection2DArray, options?: ConverterOptions): Partial<ImageAnnotations> {
 
-  const objectLabel = defaultLabel;
+  const labels = options?.objectLabels ?? defaultLabels;
 
   const timestamp = { sec: msg.header.stamp.sec, nsec: msg.header.stamp.nanosec };
 
@@ -53,8 +58,6 @@ function detection2DArrayConverter(msg: Detection2DArray, options?: ConverterOpt
     };
   });
 
-  const labels: Record<string, string> = objectLabel ?? {};
-
   const texts = msg.detections.map((detection) => {
     const bbox = detection.bbox;
     const centerX = bbox.center.position.x;
@@ -67,7 +70,7 @@ function detection2DArrayConverter(msg: Detection2DArray, options?: ConverterOpt
 
     const output = []
 
-    const objectName = labels[classId] ?? "unknown";
+    const objectName = labels.get(classId) ?? "unknown";
     output.push(textLabel(timestamp, objectName, { x: left, y: bottom }));
 
     let mainText = "";

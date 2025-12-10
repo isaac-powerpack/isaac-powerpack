@@ -1,10 +1,12 @@
+import type { Color, ImageAnnotations } from "@foxglove/schemas";
 import { useMemo } from "react";
 import { Layer, Line, Circle, Label, Tag, Text } from "react-konva";
-import type { Color, ImageAnnotations } from "@foxglove/schemas";
+
 import { useCanvasStore } from "./Canvas";
 import { calculateImageFit } from "../../lib/utils/images";
 
 type BoundingBoxLayerProps = {
+    isShow?: boolean;
     image?: HTMLCanvasElement | null;
     annotations?: Partial<ImageAnnotations>;
 };
@@ -13,19 +15,20 @@ function toRgba({ r, g, b, a }: Color): string {
     return `rgba(${r * 255}, ${g * 255}, ${b * 255}, ${a})`;
 }
 
-export function BoundingBoxLayer({ annotations, image }: BoundingBoxLayerProps) {
+export function BoundingBoxLayer({ annotations, image, isShow }: BoundingBoxLayerProps) {
     if (!annotations) {
         return null;
     }
 
     const dimensions = useCanvasStore((state) => state.dimensions);
 
-    const { scale, x, y } = useMemo(() => calculateImageFit(
-        dimensions,
-        image
-    ), [dimensions, image]);
+    const { scale, x, y } = useMemo(() => calculateImageFit(dimensions, image), [dimensions, image]);
 
     const { circles, points, texts } = annotations;
+
+    if (!isShow) {
+        return null;
+    }
 
     return (
         <Layer scaleX={scale} scaleY={scale} x={x} y={y}>

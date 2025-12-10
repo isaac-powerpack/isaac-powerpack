@@ -1,28 +1,21 @@
+import { useMemo } from "react";
 import { Layer, Image } from "react-konva";
+
 import { useCanvasStore } from "./Canvas";
 import { calculateImageFit } from "../../lib/utils/images";
-import { useMemo } from "react";
 
 type ImageLayerProps = {
-    image?: HTMLCanvasElement | null;
+  image?: HTMLCanvasElement | null;
 };
 
 export function ImageLayer({ image }: ImageLayerProps) {
-    const dimensions = useCanvasStore((state) => state.dimensions);
+  const dimensions = useCanvasStore((state) => state.dimensions);
 
-    const { scale, x, y } = useMemo(() => calculateImageFit(
-        dimensions,
-        image
-    ), [dimensions, image]);
+  const { scale, x, y } = useMemo(() => calculateImageFit(dimensions, image), [dimensions, image]);
 
-    return (
-        <Layer
-            scaleX={scale}
-            scaleY={scale}
-            x={x}
-            y={y}
-        >
-            {image && <Image image={image} />}
-        </Layer>
-    );
+  return (
+    <Layer scaleX={scale} scaleY={scale} x={x} y={y}>
+      {image && <Image image={image} />}
+    </Layer>
+  );
 }

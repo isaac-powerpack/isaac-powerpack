@@ -1,6 +1,13 @@
-import { CircleAnnotation, ImageAnnotations, PointsAnnotation, TextAnnotation, Vector2 } from "@foxglove/schemas";
+import {
+  CircleAnnotation,
+  ImageAnnotations,
+  PointsAnnotation,
+  TextAnnotation,
+  Vector2,
+} from "@foxglove/schemas";
 
 import defaultLabelsJson from "./default.label.json";
+import { PanelState } from "./hooks/useSettingsPanel";
 import { Detection2DArray } from "./types";
 
 type ConverterOptions = {
@@ -8,17 +15,22 @@ type ConverterOptions = {
   points?: Partial<PointsAnnotation>;
   texts?: Partial<TextAnnotation> & { y_offset?: number };
   objectLabels?: ReadonlyMap<string, any>;
-}
+  state?: PanelState;
+};
 
-const defaultLabels: ReadonlyMap<string, string> = new Map(
-  Object.entries(defaultLabelsJson)
-);
+const defaultLabels: ReadonlyMap<string, string> = new Map(Object.entries(defaultLabelsJson));
 
-function detection2DArrayConverter(msg: Detection2DArray, options?: ConverterOptions): Partial<ImageAnnotations> {
-
+function detection2DArrayConverter(
+  msg: Detection2DArray,
+  options?: ConverterOptions,
+): Partial<ImageAnnotations> {
   const labels = options?.objectLabels ?? defaultLabels;
 
   const timestamp = { sec: msg.header.stamp.sec, nsec: msg.header.stamp.nanosec };
+
+  const isShowId = options?.state?.display.id ?? true;
+  const isShowScore = options?.state?.display.score ?? true;
+  const isShowObjectLabel = options?.state?.display.objectLabel ?? true;
 
   const textLabel = (timestamp: any, text: string, position: Vector2) => ({
     timestamp,
@@ -67,19 +79,28 @@ function detection2DArrayConverter(msg: Detection2DArray, options?: ConverterOpt
     const top = centerY - bbox.size_y / 2;
     const left = centerX - bbox.size_x / 2;
     const bottom = centerY + bbox.size_y / 2;
-
-    const output = []
-
-    const objectName = labels.get(classId) ?? "unknown";
-    output.push(textLabel(timestamp, objectName, { x: left, y: bottom }));
-
+    const output = [];
     let mainText = "";
-    mainText += `ID:${classId}`;
-    const scoreValue = score || 0;
-    mainText += `${mainText ? " " : ""}(${(scoreValue * 100).toFixed(1)}%)`;
 
-    const yOffset = options?.texts?.y_offset ?? 12;
-    output.push(textLabel(timestamp, mainText, { x: left, y: top + yOffset }));
+    if (isShowObjectLabel) {
+      const objectName = labels.get(classId) ?? "unknown";
+      output.push(textLabel(timestamp, objectName, { x: left, y: bottom }));
+    }
+
+    if (isShowId) {
+      mainText += `ID:${classId}`;
+    }
+
+    if (isShowScore) {
+      const scoreValue = score || 0;
+      mainText += `${mainText ? " " : ""}(${(scoreValue * 100).toFixed(1)}%)`;
+    }
+
+    // mainText is not ""
+    if (mainText !== "") {
+      const yOffset = options?.texts?.y_offset ?? 12;
+      output.push(textLabel(timestamp, mainText, { x: left, y: top + yOffset }));
+    }
 
     return output;
   });

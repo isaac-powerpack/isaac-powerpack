@@ -15,12 +15,12 @@
 <details open>
 <summary><b>v0.1.0 (🏃 In Progress)</b></summary>
 
-- [ ] Detection2D Module
+- [x] Detection2D Module
   - [x] Create a Detection2D panel for displaying images  
   - [x] Implement a `vision_msgs/msg/Detection2DArray` to `foxglove.ImageAnnotations` converter 
   - [x] Display 2D bounding boxes on images
   - [x] Support custom object labels and IDs through Foxglove variables  
-  - [ ] Display object IDs, confidence scores, and label information  
+  - [x] Display object IDs, confidence scores, and label information  
 
 - [ ] Sim-Camera Module
   - [ ] Develop an Isaac Sim extension for spawning cameras and generating the required ROS 2 Omnigraph nodes for the [Hawk Stereo Camera](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)  

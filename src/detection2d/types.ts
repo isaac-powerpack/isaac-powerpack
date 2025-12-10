@@ -55,13 +55,13 @@ export interface SensorImage {
   encoding: string;
 
   /** is this data big-endian */
-  is_bigendian: number;  // (0 or 1)
+  is_bigendian: number; // (0 or 1)
 
   /** Full row length in bytes */
   step: number;
 
   /** actual image data, size is (step * height) bytes */
-  data: number[];        // uint8[]
+  data: number[]; // uint8[]
 }
 
 // Custom event message

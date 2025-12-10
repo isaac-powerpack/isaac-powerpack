@@ -1,183 +1,193 @@
 import { PanelExtensionContext, SettingsTreeAction, Topic } from "@foxglove/extension";
-import { useCallback, useEffect, useState } from "react";
 import { produce } from "immer";
 import { set } from "lodash";
+import { useCallback, useEffect, useState } from "react";
+
 import { useFilterTopics } from "../../lib/hooks/useFilterTopics";
 import { DEFAULT_OBJECT_LABEL_VAR_NAME } from "../constants";
 
-
 export type PanelState = {
-    data: {
-        imageTopic?: string,
-        detectionTopic?: string,
-        // reference string to variable name
-        objectLabelData?: string,
-    },
-    display: {
-        boundingBox: boolean,
-        id: boolean,
-        score: boolean,
-        objectLabel: boolean,
-        fontSize: number,
-    }
+  data: {
+    imageTopic?: string;
+    detectionTopic?: string;
+    // reference string to variable name
+    objectLabelData?: string;
+  };
+  display: {
+    boundingBox: boolean;
+    id: boolean;
+    score: boolean;
+    objectLabel: boolean;
+    fontSize: number;
+  };
 };
 
-export function useSettingsPanel(context: PanelExtensionContext, topics: readonly Topic[] | undefined) {
+export function useSettingsPanel(
+  context: PanelExtensionContext,
+  topics: readonly Topic[] | undefined,
+) {
+  const allImageTopics = useFilterTopics(topics, ["sensor_msgs/msg/Image"]);
+  const allDetectionTopics = useFilterTopics(topics, ["vision_msgs/msg/Detection2DArray"]);
 
-    const allImageTopics = useFilterTopics(topics, ["sensor_msgs/msg/Image"]);
-    const allDetectionTopics = useFilterTopics(topics, ["vision_msgs/msg/Detection2DArray"]);
+  // Define panel settings data
+  const [state, setState] = useState<PanelState>(() => {
+    const initialState = context.initialState as Partial<PanelState>;
+    return {
+      data: {
+        imageTopic: initialState?.data?.imageTopic,
+        detectionTopic: initialState?.data?.detectionTopic,
+        objectLabelData: initialState?.data?.objectLabelData ?? DEFAULT_OBJECT_LABEL_VAR_NAME,
+      },
+      display: {
+        boundingBox: initialState?.display?.boundingBox ?? true,
+        id: initialState?.display?.id ?? true,
+        score: initialState?.display?.score ?? true,
+        objectLabel: initialState?.display?.objectLabel ?? true,
+        fontSize: initialState?.display?.fontSize ?? 10,
+      },
+    };
+  });
 
+  // Define Panel Settings UI & Handlers
+  const actionHandler = useCallback(
+    (action: SettingsTreeAction) => {
+      if (action.action === "update") {
+        const { path, value } = action.payload;
+        setState(produce((draft) => set(draft, path, value)));
+      } else if (action.action === "perform-node-action") {
+        console.log("perform-node-action action");
+      }
+    },
+    [context],
+  );
 
-    // Define panel settings data
-    const [state, setState] = useState<PanelState>(() => {
-        const initialState = context.initialState as Partial<PanelState>;
-        return {
-            data: {
-                imageTopic: initialState?.data?.imageTopic,
-                detectionTopic: initialState?.data?.detectionTopic,
-                objectLabelData: initialState?.data?.objectLabelData ?? DEFAULT_OBJECT_LABEL_VAR_NAME,
+  useEffect(() => {
+    context.saveState(state);
+
+    const topicOptions = allImageTopics.map((topic) => ({ value: topic.name, label: topic.name }));
+    const detectionTopicOptions = allDetectionTopics.map((topic) => ({
+      value: topic.name,
+      label: topic.name,
+    }));
+
+    context.updatePanelSettingsEditor({
+      actionHandler,
+      nodes: {
+        data: {
+          label: "General",
+          fields: {
+            imageTopic: {
+              label: "Image Topic",
+              input: "select",
+              options: topicOptions,
+              value: state.data.imageTopic,
+              help: "Topic to subscribe for image data. (sensor_msgs/msg/Image)",
             },
-            display: {
-                boundingBox: initialState?.display?.boundingBox ?? true,
-                id: initialState?.display?.id ?? true,
-                score: initialState?.display?.score ?? true,
-                objectLabel: initialState?.display?.objectLabel ?? true,
-                fontSize: initialState?.display?.fontSize ?? 10,
+            detectionTopic: {
+              label: "Detection Topic",
+              input: "select",
+              options: detectionTopicOptions,
+              value: state.data.detectionTopic,
+              help: "Topic to subscribe for 2D detection data. (vision_msgs/msg/Detection2DArray)",
             },
-        };
+
+            objectLabelData: {
+              label: "Object Label Data",
+              input: "string",
+              value: state.data.objectLabelData,
+              help: `Variable name pointed to the data mapping between id and label. Specify "${DEFAULT_OBJECT_LABEL_VAR_NAME}" to use the default extension mapping data.`,
+            },
+          },
+        },
+        display: {
+          label: "Display",
+          fields: {
+            boundingBox: {
+              label: "Bounding Box",
+              input: "boolean",
+              value: state.display.boundingBox,
+            },
+            id: {
+              label: "Id",
+              input: "boolean",
+              value: state.display.id,
+            },
+            score: {
+              label: "Score",
+              input: "boolean",
+              value: state.display.score,
+            },
+            objectLabel: {
+              label: "Object Label",
+              input: "boolean",
+              value: state.display.objectLabel,
+            },
+            fontSize: {
+              label: "Font Size",
+              input: "number",
+              value: state.display.fontSize,
+              min: 6,
+              max: 32,
+              step: 1,
+            },
+          },
+        },
+      },
     });
+  }, [allImageTopics, allDetectionTopics, actionHandler, context, state]);
 
-    // Define Panel Settings UI & Handlers
-    const actionHandler = useCallback((action: SettingsTreeAction) => {
-        if (action.action === "update") {
-            const { path, value } = action.payload;
-            setState(produce((draft) => set(draft, path, value)));
-        } else if (action.action === "perform-node-action") {
-            console.log("perform-node-action action");
-        }
-    }, [context]);
+  // Default imageTopic
+  useEffect(() => {
+    if (state.data.imageTopic !== undefined || allImageTopics.length === 0) {
+      return;
+    }
 
+    const topicNames = allImageTopics.map((topic) => topic.name);
+    const hasResizeImage = topicNames.includes("/resize/image");
+    const defaultTopic = hasResizeImage ? "/resize/image" : allImageTopics[0]?.name;
 
-    useEffect(() => {
-        context.saveState(state);
+    setState(
+      produce((draft) => {
+        draft.data.imageTopic = defaultTopic;
+      }),
+    );
+  }, [state.data.imageTopic, allImageTopics]);
 
-        const topicOptions = allImageTopics.map((topic) => ({ value: topic.name, label: topic.name }));
-        const detectionTopicOptions = allDetectionTopics.map((topic) => ({ value: topic.name, label: topic.name }));
+  // Default detectionTopic
+  useEffect(() => {
+    if (state.data.detectionTopic !== undefined || allDetectionTopics.length === 0) {
+      return;
+    }
 
-        context.updatePanelSettingsEditor({
-            actionHandler,
-            nodes: {
-                data: {
-                    label: "General",
-                    fields: {
-                        imageTopic: {
-                            label: "Image Topic",
-                            input: "select",
-                            options: topicOptions,
-                            value: state.data.imageTopic,
-                            help: "Topic to subscribe for image data. (sensor_msgs/msg/Image)",
-                        },
-                        detectionTopic: {
-                            label: "Detection Topic",
-                            input: "select",
-                            options: detectionTopicOptions,
-                            value: state.data.detectionTopic,
-                            help: "Topic to subscribe for 2D detection data. (vision_msgs/msg/Detection2DArray)",
-                        },
+    setState(
+      produce((draft) => {
+        draft.data.detectionTopic = allDetectionTopics[0]?.name;
+      }),
+    );
+  }, [state.data.detectionTopic, allDetectionTopics]);
 
-                        objectLabelData: {
-                            label: "Object Label Data",
-                            input: "string",
-                            value: state.data.objectLabelData,
-                            help: `Variable name pointed to the data mapping between id and label. Specify "${DEFAULT_OBJECT_LABEL_VAR_NAME}" to use the default extension mapping data.`,
-                        },
-                    }
-                },
-                display: {
-                    label: "Display",
-                    fields: {
-                        boundingBox: {
-                            label: "Bounding Box",
-                            input: "boolean",
-                            value: state.display.boundingBox,
-                        },
-                        id: {
-                            label: "Id",
-                            input: "boolean",
-                            value: state.display.id,
-                        },
-                        score: {
-                            label: "Score",
-                            input: "boolean",
-                            value: state.display.score,
-                        },
-                        objectLabel: {
-                            label: "Object Label",
-                            input: "boolean",
-                            value: state.display.objectLabel,
-                        },
-                        fontSize: {
-                            label: "Font Size",
-                            input: "number",
-                            value: state.display.fontSize,
-                            min: 6,
-                            max: 32,
-                            step: 1,
-                        },
-                    }
-                }
-            }
-        });
+  // Subscribe to topic changes
+  useEffect(() => {
+    const subscriptions: { topic: string }[] = [];
 
-    }, [allImageTopics, allDetectionTopics, actionHandler, context, state]);
+    if (state.data.imageTopic) {
+      subscriptions.push({ topic: state.data.imageTopic });
+    }
+    if (state.data.detectionTopic) {
+      subscriptions.push({ topic: state.data.detectionTopic });
+    }
 
-    // Default imageTopic
-    useEffect(() => {
-        if (state.data.imageTopic !== undefined || allImageTopics.length === 0) {
-            return;
-        }
+    if (subscriptions.length === 0) {
+      console.warn("No topics selected for subscription.");
+      return;
+    }
 
-        const topicNames = allImageTopics.map((topic) => topic.name);
-        const hasResizeImage = topicNames.includes("/resize/image");
-        const defaultTopic = hasResizeImage ? "/resize/image" : allImageTopics[0]?.name;
+    console.info(
+      "Subscribing to topics:",
+      subscriptions.map((s) => s.topic),
+    );
+    context.subscribe(subscriptions);
+  }, [context, state.data.imageTopic, state.data.detectionTopic]);
 
-        setState(produce((draft) => {
-            draft.data.imageTopic = defaultTopic;
-        }));
-
-    }, [state.data.imageTopic, allImageTopics]);
-
-    // Default detectionTopic
-    useEffect(() => {
-        if (state.data.detectionTopic !== undefined || allDetectionTopics.length === 0) {
-            return;
-        }
-
-        setState(produce((draft) => {
-            draft.data.detectionTopic = allDetectionTopics[0]?.name;
-        }));
-
-    }, [state.data.detectionTopic, allDetectionTopics]);
-
-    // Subscribe to topic changes
-    useEffect(() => {
-        const subscriptions: { topic: string }[] = [];
-
-        if (state.data.imageTopic) {
-            subscriptions.push({ topic: state.data.imageTopic });
-        }
-        if (state.data.detectionTopic) {
-            subscriptions.push({ topic: state.data.detectionTopic });
-        }
-
-        if (subscriptions.length === 0) {
-            console.warn("No topics selected for subscription.");
-            return;
-        }
-
-        console.info("Subscribing to topics:", subscriptions.map(s => s.topic));
-        context.subscribe(subscriptions);
-    }, [context, state.data.imageTopic, state.data.detectionTopic]);
-
-    return { state, setState };
+  return { state, setState };
 }

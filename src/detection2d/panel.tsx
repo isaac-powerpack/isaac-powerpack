@@ -1,97 +1,102 @@
 import { PanelExtensionContext, Topic } from "@foxglove/extension";
 import { ReactElement, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Detection2DArrayMessageEvent, ImageMessageEvent } from "./types";
-import { useSettingsPanel } from "./hooks/useSettingsPanel";
-import { isValidString } from "../lib/utils/topics";
-import { useRenderImage } from "./hooks/useRenderImage";
+
+import { BoundingBoxLayer } from "./comps/BoundingBoxLayer";
 import { Canvas } from "./comps/Canvas";
 import { ImageLayer } from "./comps/ImageLayer";
 import { detection2DArrayConverter } from "./converter";
-import { BoundingBoxLayer } from "./comps/BoundingBoxLayer";
 import { useDetectionLabel } from "./hooks/useDetectionLabel";
-
+import { useRenderImage } from "./hooks/useRenderImage";
+import { useSettingsPanel } from "./hooks/useSettingsPanel";
+import { Detection2DArrayMessageEvent, ImageMessageEvent } from "./types";
+import { isValidString } from "../lib/utils/topics";
 
 function Detection2DPanel({ context }: { context: PanelExtensionContext }): ReactElement {
-    const [imgEvent, setImgEvent] = useState<ImageMessageEvent>();
-    const [detection2dArrayEvent, setDetection2dArrayEvent] = useState<Detection2DArrayMessageEvent>();
+  const [imgEvent, setImgEvent] = useState<ImageMessageEvent>();
+  const [detection2dArrayEvent, setDetection2dArrayEvent] =
+    useState<Detection2DArrayMessageEvent>();
 
-    const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
-    const [variables, setVariables] = useState<ReadonlyMap<string, any> | undefined>();
-    const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
+  const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
+  const [variables, setVariables] = useState<ReadonlyMap<string, any> | undefined>();
+  const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
 
-    const { state } = useSettingsPanel(context, topics);
-    const objectLabels = useDetectionLabel(context, variables, state.data.objectLabelData);
+  const { state } = useSettingsPanel(context, topics);
+  const objectLabels = useDetectionLabel(context, variables, state.data.objectLabelData);
 
-    const imgAnnotations = useMemo(() => {
-        if (!detection2dArrayEvent) {
-            return undefined;
-        }
+  const imgAnnotations = useMemo(() => {
+    if (!detection2dArrayEvent) {
+      return undefined;
+    }
 
-        const options = {
-            texts: { font_size: state.display.fontSize, y_offset: -15 },
-            objectLabels,
-        }
+    const options = {
+      texts: { font_size: state.display.fontSize, y_offset: -15 },
+      objectLabels,
+      state,
+    };
 
-        return detection2DArrayConverter(detection2dArrayEvent.message, options);
-    }, [detection2dArrayEvent, objectLabels, state.display.fontSize]);
+    return detection2DArrayConverter(detection2dArrayEvent.message, options);
+  }, [detection2dArrayEvent, objectLabels, state]);
 
+  //----- Panel Initialization -----
+  useLayoutEffect(() => {
+    context.onRender = (renderState, done) => {
+      setRenderDone(() => done);
+      setTopics(renderState.topics ?? []);
+      setVariables(renderState.variables);
 
-    //----- Panel Initialization -----
-    useLayoutEffect(() => {
-        context.onRender = (renderState, done) => {
-            setRenderDone(() => done);
-            setTopics(renderState.topics ?? []);
-            setVariables(renderState.variables);
+      // message frame update
+      const hasFrame =
+        renderState.currentFrame &&
+        renderState.currentFrame.length > 0 &&
+        isValidString(state.data.imageTopic) &&
+        isValidString(state.data.detectionTopic);
 
-            // message frame update
-            const hasFrame =
-                renderState.currentFrame &&
-                renderState.currentFrame.length > 0 &&
-                isValidString(state.data.imageTopic) &&
-                isValidString(state.data.detectionTopic);
+      if (hasFrame) {
+        renderState.currentFrame.forEach((msg: any) => {
+          switch (msg.topic) {
+            case state.data.imageTopic:
+              setImgEvent(msg);
+              break;
+            case state.data.detectionTopic:
+              setDetection2dArrayEvent(msg);
+              break;
+            default:
+              break;
+          }
+        });
+      }
+    };
+    context.watch("topics");
+    context.watch("variables");
+    context.watch("currentFrame");
+  }, [context, state.data.imageTopic, state.data.detectionTopic]);
 
-            if (hasFrame) {
-                renderState.currentFrame.forEach((msg: any) => {
-                    switch (msg.topic) {
-                        case state.data.imageTopic:
-                            setImgEvent(msg);
-                            break;
-                        case state.data.detectionTopic:
-                            setDetection2dArrayEvent(msg);
-                            break;
-                        default:
-                            break;
-                    }
-                });
-            }
-        }
-        context.watch("topics");
-        context.watch("variables");
-        context.watch("currentFrame");
-    }, [context, state.data.imageTopic, state.data.detectionTopic]);
+  const imageCanvas = useRenderImage(imgEvent);
 
-    const imageCanvas = useRenderImage(imgEvent);
+  // notify painting render done
+  useEffect(() => {
+    renderDone?.();
+  }, [renderDone]);
 
-    // notify painting render done
-    useEffect(() => {
-        renderDone?.();
-    }, [renderDone]);
-
-    return (
-        <Canvas>
-            <ImageLayer image={imageCanvas} />
-            <BoundingBoxLayer image={imageCanvas} annotations={imgAnnotations} />
-        </Canvas>
-    );
+  return (
+    <Canvas>
+      <ImageLayer image={imageCanvas} />
+      <BoundingBoxLayer
+        image={imageCanvas}
+        annotations={imgAnnotations}
+        isShow={state.display.boundingBox}
+      />
+    </Canvas>
+  );
 }
 
 export function initDetection2DPanel(context: PanelExtensionContext): () => void {
-    const root = createRoot(context.panelElement);
-    root.render(<Detection2DPanel context={context} />);
+  const root = createRoot(context.panelElement);
+  root.render(<Detection2DPanel context={context} />);
 
-    // Return a function to run when the panel is removed
-    return () => {
-        root.unmount();
-    };
+  // Return a function to run when the panel is removed
+  return () => {
+    root.unmount();
+  };
 }

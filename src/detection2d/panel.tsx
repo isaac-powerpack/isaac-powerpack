@@ -29,12 +29,12 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         }
 
         const options = {
-            texts: { font_size: 11, y_offset: -15 },
+            texts: { font_size: state.display.fontSize, y_offset: -15 },
             objectLabels,
         }
 
         return detection2DArrayConverter(detection2dArrayEvent.message, options);
-    }, [detection2dArrayEvent, objectLabels]);
+    }, [detection2dArrayEvent, objectLabels, state.display.fontSize]);
 
 
     //----- Panel Initialization -----

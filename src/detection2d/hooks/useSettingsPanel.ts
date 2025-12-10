@@ -18,6 +18,7 @@ export type PanelState = {
         id: boolean,
         score: boolean,
         objectLabel: boolean,
+        fontSize: number,
     }
 };
 
@@ -41,6 +42,7 @@ export function useSettingsPanel(context: PanelExtensionContext, topics: readonl
                 id: initialState?.display?.id ?? true,
                 score: initialState?.display?.score ?? true,
                 objectLabel: initialState?.display?.objectLabel ?? true,
+                fontSize: initialState?.display?.fontSize ?? 10,
             },
         };
     });
@@ -113,6 +115,14 @@ export function useSettingsPanel(context: PanelExtensionContext, topics: readonl
                             label: "Object Label",
                             input: "boolean",
                             value: state.display.objectLabel,
+                        },
+                        fontSize: {
+                            label: "Font Size",
+                            input: "number",
+                            value: state.display.fontSize,
+                            min: 6,
+                            max: 32,
+                            step: 1,
                         },
                     }
                 }

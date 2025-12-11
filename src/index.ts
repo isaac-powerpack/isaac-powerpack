@@ -1,11 +1,8 @@
 import { ExtensionContext } from "@foxglove/extension";
 
 import { Detection2DArray, detection2DArrayConverter, initDetection2DPanel } from "./detection2d";
-import { initExamplePanel } from "./examples/ExamplePanel";
 
 export function activate(extensionContext: ExtensionContext): void {
-  extensionContext.registerPanel({ name: "example panel", initPanel: initExamplePanel });
-
   extensionContext.registerPanel({ name: "Detection 2D", initPanel: initDetection2DPanel });
   extensionContext.registerMessageConverter({
     type: "schema",

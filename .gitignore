@@ -106,3 +106,6 @@ www/js/*
 
 # MacOS
 .DS_Store
+
+# Release files
+*.foxe

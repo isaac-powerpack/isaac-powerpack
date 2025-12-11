@@ -4,10 +4,16 @@
   "description": "Foxglove extension for visualizing and debugging Isaac ROS data.",
   "publisher": "bemunin",
   "homepage": "https://www.omnicraftlab.com",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "Apache 2.0",
   "main": "./dist/extension.js",
-  "keywords": [],
+  "keywords": [
+    "foxglove-extension",
+    "isaac-ros",
+    "isaac-sim",
+    "robotics",
+    "visualization"
+  ],
   "scripts": {
     "build": "foxglove-extension build",
     "foxglove:prepublish": "foxglove-extension build --mode production",

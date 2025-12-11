@@ -1,1 +1,3 @@
-export const DEFAULT_OBJECT_LABEL_VAR_NAME = "ipp_default_object_label";
+import { PREFIX } from "../constants";
+
+export const DEFAULT_OBJECT_LABEL_VAR_NAME = `${PREFIX}_default_object_label`;

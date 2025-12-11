@@ -6,7 +6,7 @@ import {
   Vector2,
 } from "@foxglove/schemas";
 
-import defaultLabelsJson from "./default.label.json";
+import defaultLabelsJson from "./data/default.label.json";
 import { PanelState } from "./hooks/useSettingsPanel";
 import { Detection2DArray } from "./types";
 

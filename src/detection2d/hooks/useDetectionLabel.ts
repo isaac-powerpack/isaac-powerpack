@@ -2,7 +2,7 @@ import { PanelExtensionContext, VariableValue } from "@foxglove/extension";
 import { useLayoutEffect, useRef } from "react";
 
 import { DEFAULT_OBJECT_LABEL_VAR_NAME } from "../constants";
-import defaultLabel from "../default.label.json";
+import defaultLabel from "../data/default.label.json";
 
 export function useDetectionLabel(
   context: PanelExtensionContext,

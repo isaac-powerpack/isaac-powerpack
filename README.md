@@ -46,8 +46,10 @@
 <details>
 <summary><b>Future Ideas</b></summary>
 
-- [ ] Jetson Stat Module: Create a Foxglove panel to monitor Jetson device statistics
-- [ ] sim-camera: Add Support to [Intel Realsense Depth Camera D455](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
+- Jetson Stat Module: Create a Foxglove panel to monitor Jetson device statistics
+- sim-camera: Add Support to [Intel Realsense Depth Camera D455](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
+- create-isaac: A starter project template generator for developing Isaac ROS and Isaac Sim applications.
+- isaac-powerpack-cli: CLI tool to manage Isaac Powerpack extensions and modules
 </details>
 
 ## Usage

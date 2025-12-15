@@ -4,11 +4,10 @@ ext-folder = [
     "./packages/sim-exts",
 ]
 
-[settings]
+[sim.settings]
 raytracing-motion = false
 cpu-performance-mode = true
 
-[exts]
+[sim.exts]
 isaacsim.code_editor.vscode = true
 pow.workcell.camera = true
-

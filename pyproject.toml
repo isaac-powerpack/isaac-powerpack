@@ -8,6 +8,7 @@ dependencies = [
     "click>=8.1.7",
     "isaacsim[all,extscache]==5.1.0",
     "pow-cli",
+    "toml>=0.10.2",
 ]
 
 [project.scripts]

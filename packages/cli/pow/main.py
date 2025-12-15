@@ -13,10 +13,15 @@ def pow():
 
 
 # Sim commands
-@pow.group()
-def sim():
-    """Isaac Sim related commands."""
-    pass
+@pow.group(invoke_without_command=True)
+@click.pass_context
+def sim(ctx):
+    """Isaac Sim related commands.
+
+    Defaults to 'pow sim run' when no subcommand is specified.
+    """
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(run)
 
 
 @sim.group()

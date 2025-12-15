@@ -770,6 +770,7 @@ dependencies = [
     { name = "click" },
     { name = "isaacsim", extra = ["all", "extscache"] },
     { name = "pow-cli" },
+    { name = "toml" },
 ]
 
 [package.metadata]
@@ -777,6 +778,7 @@ requires-dist = [
     { name = "click", specifier = ">=8.1.7" },
     { name = "isaacsim", extras = ["all", "extscache"], specifier = "==5.1.0" },
     { name = "pow-cli", editable = "packages/cli" },
+    { name = "toml", specifier = ">=0.10.2" },
 ]
 
 [[package]]

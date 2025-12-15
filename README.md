@@ -22,7 +22,6 @@
   - [x] Support custom object labels and IDs through Foxglove variables
   - [x] Display object IDs, confidence scores, and label information
 - [ ] Pow CLI
-  - [ ] Add `init` command to initialize a new Isaac ROS/Isaac Sim application project with a default Isaac Powerpack configuration
   - [ ] Add `sim` or `sim run` command to launch Isaac Sim using Isaac Powerpack preconfigured settings
   - [x] Add `sim add local-assets` command to install Isaac Sim local assets for version 5.1.0
   - [ ] Add `sim add sim-exts` command to install Isaac Powerpack specific simulation extensions

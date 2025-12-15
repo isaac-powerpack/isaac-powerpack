@@ -1,0 +1,14 @@
+[sim]
+version = "5.1.0"
+ext-folder = [
+    "./packages/sim-exts",
+]
+
+[settings]
+raytracing-motion = false
+cpu-performance-mode = true
+
+[exts]
+isaacsim.code_editor.vscode = true
+pow.workcell.camera = true
+

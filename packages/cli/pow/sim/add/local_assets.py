@@ -217,7 +217,7 @@ def extract_assets(
     click.echo("Cleanup complete.")
 
 
-@click.command("local-asset")
+@click.command("local-assets")
 @click.argument("path", required=True)
 @click.option(
     "-s",
@@ -237,7 +237,7 @@ def extract_assets(
     is_flag=True,
     help="Keep zip files after extraction",
 )
-def install_local_asset(
+def add_local_assets(
     path: str, skip_download: bool, version: str, keep_zip: bool
 ) -> None:
     """Download Isaac Sim assets and install at target path.
@@ -263,4 +263,4 @@ def install_local_asset(
     # Update kit settings with local asset paths
     update_kit_settings(target_path / "isaacsim_assets", version)
 
-    click.echo(f"Local asset version {version} installation complete.")
+    click.echo(f"Isaac sim local assets version {version} installation complete.")

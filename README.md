@@ -23,15 +23,13 @@
   - [x] Display object IDs, confidence scores, and label information
 - [ ] Pow CLI
   - [ ] Add `init` command to initialize a new Isaac ROS/Isaac Sim application project with a default Isaac Powerpack configuration
-  - [ ] Add `sim` command to launch Isaac Sim using Isaac Powerpack preconfigured settings
-  - [x] Add `install local-asset` command to install Isaac Sim local assets for version 5.1.0
-  - [ ] Add `install sim-exts` command to install Isaac Powerpack specific simulation extensions
-  - [ ] Add `install` command to install all required packages and dependencies to set up a new project
-  - [ ] Add `run` command to launch the Isaac ROS Docker container on NVIDIA Jetson Orin boards
+  - [ ] Add `sim` or `sim run` command to launch Isaac Sim using Isaac Powerpack preconfigured settings
+  - [x] Add `sim add local-assets` command to install Isaac Sim local assets for version 5.1.0
+  - [ ] Add `sim add sim-exts` command to install Isaac Powerpack specific simulation extensions
+  - [ ] Add `ros run` command to launch the Isaac ROS Docker container on NVIDIA Jetson Orin boards
 - [ ] Sim-Camera Module
   - [ ] Develop an Isaac Sim extension for spawning cameras and generating the required ROS 2 Omnigraph nodes for the [Hawk Stereo Camera](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
   - [ ] Enable manual camera control via keyboard input in Foxglove Studio
-  - [ ] Add joystick support for the [Logitech F710 Gamepad](https://www.logitechg.com/th-th/products/gamepads/f710-wireless-gamepad.html) and [PS5 DualSense Wireless Controller](https://www.playstation.com/en-th/accessories/dualsense-wireless-controller/)
 
 </details>
 
@@ -46,8 +44,9 @@
   - [ ] Display camera meshes directly within the Detection3D panel
   - [ ] Visualize 3D bounding boxes, object IDs, confidence scores, and label information
   - [ ] Render pose axes for each detected object within the Detection3D panel
-
-</details>
+- [] Sim-Camera Module
+  - [ ] Add joystick support for the [Logitech F710 Gamepad](https://www.logitechg.com/th-th/products/gamepads/f710-wireless-gamepad.html) and [PS5 DualSense Wireless Controller](https://www.playstation.com/en-th/accessories/dualsense-wireless-controller/)
+  </details>
 
 <details>
 <summary><b>Future Ideas</b></summary>

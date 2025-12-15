@@ -21,7 +21,13 @@
   - [x] Display 2D bounding boxes on images
   - [x] Support custom object labels and IDs through Foxglove variables
   - [x] Display object IDs, confidence scores, and label information
-
+- [ ] Pow CLI
+  - [ ] Add `init` command to initialize a new Isaac ROS/Isaac Sim application project with a default Isaac Powerpack configuration
+  - [ ] Add `sim` command to launch Isaac Sim using Isaac Powerpack preconfigured settings
+  - [x] Add `install local-asset` command to install Isaac Sim local assets for version 5.1.0
+  - [ ] Add `install sim-exts` command to install Isaac Powerpack specific simulation extensions
+  - [ ] Add `install` command to install all required packages and dependencies to set up a new project
+  - [ ] Add `run` command to launch the Isaac ROS Docker container on NVIDIA Jetson Orin boards
 - [ ] Sim-Camera Module
   - [ ] Develop an Isaac Sim extension for spawning cameras and generating the required ROS 2 Omnigraph nodes for the [Hawk Stereo Camera](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
   - [ ] Enable manual camera control via keyboard input in Foxglove Studio
@@ -49,7 +55,6 @@
 - Jetson Stat Module: Create a Foxglove panel to monitor Jetson device statistics
 - sim-camera: Add Support to [Intel Realsense Depth Camera D455](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
 - create-isaac: A starter project template generator for developing Isaac ROS and Isaac Sim applications.
-- isaac-powerpack-cli: CLI tool to manage Isaac Powerpack extensions and modules
 </details>
 
 ## Usage

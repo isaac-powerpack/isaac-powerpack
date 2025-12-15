@@ -17,6 +17,5 @@ def install():
 
 install.add_command(install_local_asset)
 
-
 if __name__ == "__main__":
     pow()

@@ -79,13 +79,14 @@ Here is the table of Isaac ROS Packages or Isaac Sim Extensions mapping to our c
 | Device            | ✅ Jetson AGX Orin 32 GB — Tested <br> ⏳ Jetson Orin Nano 8 GB — Pending Test |
 | Isaac ROS Version | `release-3.2`                                                                  |
 | Isaac Sim         | `5.1.0`                                                                        |
+| OS                | Ubuntu 22.04                                                                   |
 
 <br>
  
 > 💡 Notes
 > - This project is actively developed and tested with Isaac ROS version `release-3.2` on the NVIDIA Jetson AGX Orin 32GB. 
 > - The Jetson Orin Nano 8GB (also known as the Jetson Nano Super Developer Kit) is scheduled for upcoming testing.
-> - Isaac Sim is tested on Ubuntu 22.04.
+> - Pow CLI, Isaac Sim extension is tested on Ubuntu 22.04.
 
 ## Contribution
 

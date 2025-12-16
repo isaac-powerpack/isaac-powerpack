@@ -3,6 +3,7 @@
 import click
 
 from .sim.add.local_assets import add_local_assets
+from .sim.init.init_sim import init_sim
 from .sim.run.run import run
 
 
@@ -33,6 +34,7 @@ def add():
 # Register commands
 add.add_command(add_local_assets)
 sim.add_command(run)
+sim.add_command(init_sim)
 
 if __name__ == "__main__":
     pow()

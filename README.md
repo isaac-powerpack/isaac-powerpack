@@ -2,9 +2,15 @@
     <img src="https://raw.githubusercontent.com/bemunin/isaac-powerpack/main/docs/public/logo.svg" width="400"/>
 </p>
 
-✨ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA Isaac ROS development on NVIDIA Jetson boards using Foxglove Studio.
+✨ Isaac Powerpack’s goal is to provide a toolkit that simplifies Isaac ROS development on NVIDIA Jetson boards.
 
-🚧 This project is in early development. Many features are still in progress and subject to breaking changes.
+Key features include:
+
+- 🪻 **Foxglove Studio extensions** for visualizing common Isaac ROS data
+- 🛠️ **CLI tools** to streamline Isaac ROS and Isaac Sim project setup and management
+- 📸 **Isaac Sim extensions** for quickly experimenting with Isaac ROS in a simulation playground
+
+🚧 This project is in early development. Features and APIs are still evolving and subject to breaking changes.
 
 🙋 We’ll open this project for contributions soon.
 
@@ -22,19 +28,17 @@
   - [x] Support custom object labels and IDs through Foxglove variables
   - [x] Display object IDs, confidence scores, and label information
 - [ ] Pow CLI
-  - [ ] Add `pow sim` or `pow sim run` command to launch Isaac Sim using Isaac Powerpack preconfigured settings
+  - [ ] Add `pow sim run` command and its alias `pow sim` to launch Isaac Sim using Isaac Powerpack preconfigured settings
   - [ ] Add `pow sim init` command to initlialize an Isaac Powerpack's Isaac Sim project
   - [x] Add `pow sim add local-assets` command to install Isaac Sim local assets for version 5.1.0
   - [ ] Add `pow sim add pow-exts` command to install Isaac Powerpack sim extensions
-  - [ ] Add `pow ros run` command to launch the Isaac ROS Docker container on NVIDIA Jetson Orin boards
+  - [ ] Add `pow ros run` command and its alias `pow ros` to launch the Isaac ROS Docker container on NVIDIA Jetson Orin boards
   - [ ] Add `pow ros init` command to initialize an Isaac Powerpack's Isaac ROS project
   - [ ] Add `pow ros build` command to build isaac_ros_dev docker image
-
 - [ ] Sim-Camera Module
   - [ ] Develop an Isaac Sim extension for spawning cameras and generating the required ROS 2 Omnigraph nodes for the [Hawk Stereo Camera](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
   - [ ] Enable manual camera control via keyboard input in Foxglove Studio
-
-</details>
+  </details>
 
 <details>
 <summary><b>v0.2.0</b></summary>

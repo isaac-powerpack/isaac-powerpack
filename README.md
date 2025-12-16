@@ -6,9 +6,9 @@
 
 Key features include:
 
-- 🪻 **Foxglove Studio extensions** for visualizing common Isaac ROS data
-- 🛠️ **CLI tools** to streamline Isaac ROS and Isaac Sim project setup and management
-- 📸 **Isaac Sim extensions** for quickly experimenting with Isaac ROS in a simulation playground
+- 🪻 Foxglove Studio extensions — for visualizing and debugging Isaac ROS data
+- 🛠️ CLI tools — to streamline Isaac ROS and Isaac Sim project setup and management
+- 📸 Isaac Sim extensions — for quickly experimenting with Isaac ROS in a simulation playground
 
 🚧 This project is in early development. Features and APIs are still evolving and subject to breaking changes.
 
@@ -51,7 +51,7 @@ Key features include:
   - [ ] Display camera meshes directly within the Detection3D panel
   - [ ] Visualize 3D bounding boxes, object IDs, confidence scores, and label information
   - [ ] Render pose axes for each detected object within the Detection3D panel
-- [] Sim-Camera Module
+- [ ] Sim-Camera Module
   - [ ] Add joystick support for the [Logitech F710 Gamepad](https://www.logitechg.com/th-th/products/gamepads/f710-wireless-gamepad.html)
   - [ ] Add joystick support for the [PS5 DualSense Wireless Controller](https://www.playstation.com/en-th/accessories/dualsense-wireless-controller/)
   </details>

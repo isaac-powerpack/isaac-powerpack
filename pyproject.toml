@@ -10,6 +10,7 @@ dependencies = [
     "pow-cli",
     "toml>=0.10.2",
 ]
+license="Apache-2.0"
 
 [project.scripts]
 pow = "packages.cli:pow"

@@ -29,8 +29,8 @@ Key features include:
 
 - CLI
   - [x] Install Isaac Sim local assets (`sim add local-assets`, v5.1.0)
-  - [ ] Isaac Sim commands: `sim init`, `sim run`
-  - [ ] Isaac ROS commands: `ros run`, `ros init`, `ros build`
+  - [ ] Isaac Sim commands: `sim init`, `sim run` for simplified setup workflows
+  - [ ] Isaac ROS commands: `ros init`, `ros run`, `ros build` for streamlined Docker workflows
 
 - Sim Camera Module
   - [ ] Keyboard camera movement control for `pow.workcell.camera` extension in Isaac Sim
@@ -49,6 +49,10 @@ Key features include:
   - [ ] `Detection3DArray` support with configurable labels, IDs, and confidence
   - [ ] Interactive object inspection (pose, distance, metadata) with camera mesh and pose axes rendering
   - [ ] Support visualization for Isaac ROS pose estimation packages (CenterPose, DOPE, FoundationPose)
+
+- Sim Camera Module
+  - [ ] Joystick-based camera movement for `pow.workcell.camera` extension in Isaac Sim. support [Logitech F710 Gamepad](https://www.logitechg.com/th-th/products/gamepads/f710-wireless-gamepad.html) and [PS5 DualSense Wireless Controller](https://www.playstation.com/en-th/accessories/dualsense-wireless-controller/)
+  </details>
 
 <details>
 <summary><b>Future Ideas</b></summary>

@@ -11,4 +11,4 @@ dependencies = [
 license="Apache-2.0"
 
 [project.scripts]
-pow = "pow.main:pow"
+pow = "pow_cli.main:pow"

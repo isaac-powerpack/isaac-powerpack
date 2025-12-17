@@ -8,7 +8,6 @@ Key features include:
 
 - 🪻 Foxglove Studio extensions — for visualizing and debugging Isaac ROS data
 - 🛠️ CLI tools — to streamline Isaac ROS and Isaac Sim project setup and management
-- 📸 Isaac Sim extensions — for quickly experimenting with Isaac ROS in a simulation playground
 
 🚧 This project is in early development. Features and APIs are still evolving and subject to breaking changes.
 
@@ -21,46 +20,40 @@ Key features include:
 <details open>
 <summary><b>v0.1.0 (🏃 In Progress)</b></summary>
 
-- [x] Detection2D Module
-  - [x] Create a Detection2D panel for displaying images
-  - [x] Implement a `vision_msgs/msg/Detection2DArray` to `foxglove.ImageAnnotations` converter
-  - [x] Display 2D bounding boxes on images
-  - [x] Support custom object labels and IDs through Foxglove variables
-  - [x] Display object IDs, confidence scores, and label information
-- [ ] Pow CLI
-  - [ ] Add `pow sim run` command and its alias `pow sim` to launch Isaac Sim using Isaac Powerpack preconfigured settings
-  - [ ] Add `pow sim init` command to initlialize an Isaac Powerpack's Isaac Sim project
-  - [x] Add `pow sim add local-assets` command to install Isaac Sim local assets for version 5.1.0
-  - [ ] Add `pow sim add pow-exts` command to install Isaac Powerpack sim extensions
-  - [ ] Add `pow ros run` command and its alias `pow ros` to launch the Isaac ROS Docker container on NVIDIA Jetson Orin boards
-  - [ ] Add `pow ros init` command to initialize an Isaac Powerpack's Isaac ROS project
-  - [ ] Add `pow ros build` command to build isaac_ros_dev docker image
-- [ ] Sim-Camera Module
-  - [ ] Develop an Isaac Sim extension for spawning cameras and generating the required ROS 2 Omnigraph nodes for the [Hawk Stereo Camera](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
-  - [ ] Enable manual camera control via keyboard input in Foxglove Studio
+- Detection2D Module
+  - [x] Detection2D panel with image display
+  - [x] `Detection2DArray` → `ImageAnnotations` conversion
+  - [x] 2D bounding box visualization
+  - [x] Configurable object labels and IDs via Foxglove variables
+  - [x] Object ID, confidence, and label display
+
+- CLI
+  - [x] Install Isaac Sim local assets (`sim add local-assets`, v5.1.0)
+  - [ ] Isaac Sim commands: `sim init`, `sim run`
+  - [ ] Isaac ROS commands: `ros run`, `ros init`, `ros build`
+
+- Sim Camera Module
+  - [ ] Keyboard camera movement control for `pow.workcell.camera` extension in Isaac Sim
+
+  ***
+
+  > Note: `pow.workcell.camera` is implemented in [pow-orin-starter](https://github.com/bemunin/pow-orin-starter) template project.
+
   </details>
 
 <details>
 <summary><b>v0.2.0</b></summary>
 
-- [ ] Detection3D Module
-  - [ ] Implement a Detection3D Panel for visualizing 3D object pose estimation
-  - [ ] Add support for the message type `vision_msgs/msg/Detection3DArray`
-  - [ ] Enable right-click interactions on detected objects or camera meshes to view detailed information (pose, distance to the camera, and other metadata)
-  - [ ] Support custom object labels and IDs using Foxglove variables
-  - [ ] Display camera meshes directly within the Detection3D panel
-  - [ ] Visualize 3D bounding boxes, object IDs, confidence scores, and label information
-  - [ ] Render pose axes for each detected object within the Detection3D panel
-- [ ] Sim-Camera Module
-  - [ ] Add joystick support for the [Logitech F710 Gamepad](https://www.logitechg.com/th-th/products/gamepads/f710-wireless-gamepad.html)
-  - [ ] Add joystick support for the [PS5 DualSense Wireless Controller](https://www.playstation.com/en-th/accessories/dualsense-wireless-controller/)
-  </details>
+- Detection3D Module
+  - [ ] Detection3D panel for 3D pose and bounding box visualization
+  - [ ] `Detection3DArray` support with configurable labels, IDs, and confidence
+  - [ ] Interactive object inspection (pose, distance, metadata) with camera mesh and pose axes rendering
+  - [ ] Support visualization for Isaac ROS pose estimation packages (CenterPose, DOPE, FoundationPose)
 
 <details>
 <summary><b>Future Ideas</b></summary>
 
 - Jetson Stat Module: Create a Foxglove panel to monitor Jetson device statistics
-- sim-camera: Add Support to [Intel Realsense Depth Camera D455](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/usd_assets_camera_depth_sensors.html#hawk-stereo-camera)
 - create-isaac: A starter project template generator for developing Isaac ROS and Isaac Sim applications.
 </details>
 

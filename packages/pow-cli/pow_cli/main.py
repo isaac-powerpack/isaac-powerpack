@@ -21,6 +21,9 @@ def sim(ctx):
 
     Defaults to 'pow sim run' when no subcommand is specified.
     """
+
+    # simulation command run only in x86_64 environment workstation, not in jetson device
+
     if ctx.invoked_subcommand is None:
         ctx.invoke(run)
 

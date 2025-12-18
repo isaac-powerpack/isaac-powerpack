@@ -73,3 +73,6 @@ def run() -> None:
 
     config = load_config(project_root)
     click.echo(f"Loaded config: {config}")
+
+    # TODO: implement the actual run logic
+    click.echo("TODO: check only run in x86_64 environment")

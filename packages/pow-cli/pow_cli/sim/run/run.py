@@ -1,5 +1,6 @@
 """Run Isaac Sim App command."""
 
+import platform
 from pathlib import Path
 
 import click
@@ -54,11 +55,18 @@ def load_config(project_root: Path) -> dict:
     return toml.load(config_path)
 
 
-@click.command()
-def run() -> None:
+@click.command(
+    context_settings={"ignore_unknown_options": True, "allow_extra_args": True}
+)
+@click.pass_context
+def run(ctx) -> None:
     """Run an Isaac Sim App.
 
     Loads configuration from pow.toml in the project root.
+    Supports passing arbitrary flags to Isaac Sim.
+
+    Args:
+        ctx: Click context containing extra arguments.
 
     Returns:
         None
@@ -69,10 +77,20 @@ def run() -> None:
             "Could not find pow.toml in current directory or any parent directory."
         )
 
-    click.echo(f"Project root: {project_root}")
-
     config = load_config(project_root)
     click.echo(f"Loaded config: {config}")
 
+    # Check x86_64 environment
+    if not platform.machine() == "x86_64":
+        raise click.ClickException(
+            "Error: This command is not supported on Jetson devices; it is intended for x86_64"
+        )
+
     # TODO: implement the actual run logic
-    click.echo("TODO: check only run in x86_64 environment")
+    click.echo("TODO: check and source isaac ros workspace")
+
+    click.echo(
+        f"TDO: Pass Extra arguments to isaacsim command (support for example --reset-user): {ctx.args}"
+    )
+
+    click.echo("TODO: ")

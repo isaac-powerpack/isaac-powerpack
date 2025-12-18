@@ -1,7 +1,7 @@
 [sim]
-version = "5.1.0"
 ext-folder = []
-
+isaacsim_ros_ws = ""
+ros_distro = "humble" # support: humble, jazzy
 
 [[sim.profiles]]
 name = "default"
@@ -9,3 +9,7 @@ cpu_performance_mode = true
 headless = false
 extensions = ["isaacsim.code_editor.vscode"]
 raw_args = ["--/renderer/raytracingMotion/enabled=false"]
+
+[[sim.profiles]]
+name = "factory-scene"
+open_scene_path = ""

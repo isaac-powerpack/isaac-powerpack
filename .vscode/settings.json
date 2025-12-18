@@ -13,6 +13,9 @@
   "[json]": {
     "editor.defaultFormatter": "prettier.prettier-vscode"
   },
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+  },
 
   "editor.rulers": [120],
 

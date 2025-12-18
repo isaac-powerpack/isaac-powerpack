@@ -24,7 +24,7 @@ url = "https://pypi.nvidia.com/"
 
 [tool.uv.workspace]
 members = [
-    "packages/cli",
+    "packages/pow-cli",
 ]
 
 [tool.uv.sources]

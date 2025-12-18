@@ -781,7 +781,7 @@ sim = [
 requires-dist = [
     { name = "click", specifier = ">=8.1.7" },
     { name = "isaacsim", extras = ["all", "extscache"], marker = "extra == 'sim'", specifier = "==5.1.0" },
-    { name = "pow-cli", editable = "packages/cli" },
+    { name = "pow-cli", editable = "packages/pow-cli" },
     { name = "toml", specifier = ">=0.10.2" },
 ]
 provides-extras = ["sim"]
@@ -1824,8 +1824,8 @@ wheels = [
 
 [[package]]
 name = "pow-cli"
-version = "0.0.1"
-source = { editable = "packages/cli" }
+version = "0.0.1.dev1"
+source = { editable = "packages/pow-cli" }
 dependencies = [
     { name = "click" },
     { name = "toml" },

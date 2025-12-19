@@ -12,7 +12,6 @@ isaacsim_ros_ws = ""
 # support: humble, jazzy
 ros_distro = "humble"
 
-
 [[sim.profiles]]
 name = "default"
 cpu_performance_mode = true

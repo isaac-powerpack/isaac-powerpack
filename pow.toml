@@ -1,7 +1,17 @@
 [sim]
-ext-folder = []
+version = "5.1.0"
+# add paths to additional extension folders
+ext_folder = []
+# Path to Isaac Sim assets, leave empty to use from default nvidia cloud
+# if path is provided, it will use the local assets path
+isaacsim_assets_path = ""
+
+[sim.ros]
+enable_ros = true
 isaacsim_ros_ws = ""
-ros_distro = "humble" # support: humble, jazzy
+# support: humble, jazzy
+ros_distro = "humble"
+
 
 [[sim.profiles]]
 name = "default"
@@ -9,7 +19,4 @@ cpu_performance_mode = true
 headless = false
 extensions = ["isaacsim.code_editor.vscode"]
 raw_args = ["--/renderer/raytracingMotion/enabled=false"]
-
-[[sim.profiles]]
-name = "factory-scene"
 open_scene_path = ""

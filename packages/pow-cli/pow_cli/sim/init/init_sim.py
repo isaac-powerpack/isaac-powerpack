@@ -154,4 +154,4 @@ def init_sim() -> None:
     # Fix: isaacsim browser cache issue
     fix_asset_browser_cache(isaacsim_path)
 
-    click.echo(click.style("Successfully initialized Sim project 🎉", fg="green"))
+    click.echo(click.style("🎉 Successfully initialized Sim project 🎉", fg="green"))

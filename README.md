@@ -37,7 +37,7 @@ Key features include:
 
   ***
 
-  > Note: `pow.workcell.camera` is implemented in [pow-orin-starter](https://github.com/bemunin/pow-orin-starter) template project.
+  > Note: `pow.workcell.camera` will be implemented in [pow-orin-starter](https://github.com/bemunin/pow-orin-starter) template project.
 
   </details>
 

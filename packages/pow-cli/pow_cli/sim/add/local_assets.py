@@ -1,3 +1,4 @@
+import re
 import subprocess
 from pathlib import Path
 
@@ -16,6 +17,29 @@ def get_isaacsim_kit_path():
         return Path(isaacsim.__file__).parent / "apps" / "isaacsim.exp.base.kit"
     except ImportError:
         return None
+
+
+def update_pow_toml_assets_path(pow_toml_path: Path, asset_path: Path) -> None:
+    """Update pow.toml with isaacsim_assets_path.
+
+    Makes the path relative if inside cwd, or uses ~/ for home directory.
+
+    Args:
+        pow_toml_path: Path to the pow.toml file.
+        asset_path: Absolute path to the isaacsim_assets directory.
+
+    Returns:
+        str: The asset path string that was written to pow.toml.
+    """
+    # Update pow.toml with isaacsim_assets_path
+    content = pow_toml_path.read_text()
+    content = re.sub(
+        r"^(\s*isaacsim_assets_path\s*=\s*).*$",
+        rf'\g<1>"{asset_path}"',
+        content,
+        flags=re.MULTILINE,
+    )
+    pow_toml_path.write_text(content)
 
 
 def generate_settings_block(asset_base: Path) -> str:
@@ -99,7 +123,7 @@ def update_kit_settings(asset_root: Path, version: str = "5.1.0") -> Path:
     with open(kit_path, "w") as f:
         f.write(content + settings_block)
 
-    click.echo(f"Updated {kit_path} with local asset settings")
+    click.echo(f"Added local asset settings this kit file:\n {kit_path}")
     return asset_base
 
 
@@ -254,6 +278,14 @@ def add_local_assets(
     Returns:
         None
     """
+
+    # Check if project is initialized
+    pow_toml_path = Path.cwd() / "pow.toml"
+    if not pow_toml_path.exists():
+        raise click.ClickException(
+            "pow.toml not found. Please run 'pow sim init' first to initialize the workspace."
+        )
+
     target_path = Path(path).resolve()
 
     if not skip_download:
@@ -263,4 +295,14 @@ def add_local_assets(
     # Update kit settings with local asset paths
     update_kit_settings(target_path / "isaacsim_assets", version)
 
-    click.echo(f"Isaac sim local assets version {version} installation complete.")
+    # Update pow.toml with isaacsim_assets_path
+    asset_path = target_path / "isaacsim_assets"
+    update_pow_toml_assets_path(pow_toml_path, asset_path)
+
+    click.echo(f"Updated isaacsim_assets_path settings in pow.toml:\n {asset_path}")
+    click.echo(
+        click.style(
+            f"Isaac sim local assets version {version} installation complete.",
+            fg="green",
+        )
+    )

@@ -74,16 +74,29 @@ def run(ctx) -> None:
     project_root = find_project_root()
     if project_root is None:
         raise click.ClickException(
-            "Could not find pow.toml in current directory or any parent directory."
+            click.style(
+                "Could not find pow.toml in current directory or any parent directory.",
+                fg="red",
+            )
         )
 
     config = load_config(project_root)
     click.echo(f"Loaded config: {config}")
 
     # Check x86_64 environment
-    if not platform.machine() == "x86_64":
+    if platform.machine().lower() not in ("x86_64", "amd64"):
         raise click.ClickException(
-            "Error: This command is not supported on Jetson devices; it is intended for x86_64"
+            click.style(
+                "This command is not supported on Jetson devices; it is intended for x86_64 systems.",
+                fg="red",
+            )
+        )
+
+    # check if system is Ubuntu Linux
+    os_release = Path("/etc/os-release")
+    if not os_release.exists() or "id=ubuntu" not in os_release.read_text().lower():
+        raise click.ClickException(
+            click.style("This command is supported only on Ubuntu.", fg="red")
         )
 
     # TODO: implement the actual run logic

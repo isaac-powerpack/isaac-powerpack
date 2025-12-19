@@ -145,13 +145,19 @@ def init_sim() -> None:
         click.echo("Error: Isaac Sim not found. Please install Isaac Sim first.")
         return
 
-    # Create pow.toml config if not exists in root
-    create_pow_config_toml()
-
     # Generate VS Code settings for Isaac Sim
     generate_vscode_settings()
 
     # Fix: isaacsim browser cache issue
     fix_asset_browser_cache(isaacsim_path)
+
+    # TODO: setup ROS workspace if user agrees
+    #       prompt asking to use ROS in isaac sim project and select ROS distro
+    #       peform clone and install in .pow/
+    #       function should return {enable_ros: bool, ros_distro: str}
+    # ... implement here ...
+
+    # Create pow.toml config if not exists in root
+    create_pow_config_toml()
 
     click.echo(click.style("🎉 Successfully initialized Sim project 🎉", fg="green"))

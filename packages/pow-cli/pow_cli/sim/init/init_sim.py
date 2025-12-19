@@ -164,6 +164,15 @@ def update_pow_config_toml(pow_config: dict) -> None:
         flags=re.MULTILINE,
     )
 
+    # Replace isaacsim_ros_ws value
+    isaacsim_ros_ws = pow_config["sim"]["ros"].get("isaacsim_ros_ws", "")
+    content = re.sub(
+        r"^(\s*isaacsim_ros_ws\s*=\s*).*$",
+        rf'\g<1>"{isaacsim_ros_ws}"',
+        content,
+        flags=re.MULTILINE,
+    )
+
     pow_toml_path.write_text(content)
 
 
@@ -271,6 +280,11 @@ def setup_ros_workspace(pow_config: dict, is_existing: bool) -> dict:
             )
             pow_config["sim"]["ros"]["enable_ros"] = False
             return pow_config
+
+    # Store the ROS workspace path in config (use ~/ for home directory)
+    pow_config["sim"]["ros"]["isaacsim_ros_ws"] = str(ros_workspace_path).replace(
+        str(Path.home()), "~"
+    )
 
     click.echo(f"Setup ROS workspace complete at path:\n  {ros_workspace_path}")
 

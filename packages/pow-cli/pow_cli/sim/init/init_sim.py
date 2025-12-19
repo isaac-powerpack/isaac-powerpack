@@ -221,8 +221,8 @@ def setup_ros_workspace(pow_config: dict, is_existing: bool) -> dict:
         pow_config["sim"]["ros"]["ros_distro"] = selected_distro
         click.echo(f"Selected ROS distro: {selected_distro}")
 
-    # Setup .pow directory
-    pow_dir = Path.cwd() / ".pow"
+    # Setup .pow directory in user home
+    pow_dir = Path.home() / ".pow"
     pow_dir.mkdir(parents=True, exist_ok=True)
 
     # Clone IsaacSim-ros_workspaces

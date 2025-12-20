@@ -1,6 +1,9 @@
 """Run Isaac Sim App command."""
 
+import os
 import platform
+import shlex
+import subprocess
 from pathlib import Path
 
 import click
@@ -55,6 +58,145 @@ def load_config(project_root: Path) -> dict:
     return toml.load(config_path)
 
 
+def source_setup_file(file_path: Path, shell_type: str, description: str = "") -> None:
+    """Source a shell setup file and apply environment variables.
+
+    Args:
+        file_path: Path to the setup file to source.
+        shell_type: Shell type (bash, zsh, sh).
+        description: Optional description for logging.
+
+    Raises:
+        click.ClickException: If sourcing fails.
+    """
+    safe_path = shlex.quote(str(file_path))
+    command = [
+        shell_type,
+        "-c",
+        f"source {safe_path} && env",
+    ]
+
+    try:
+        subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+        label = description if description else str(file_path)
+        click.echo(
+            click.style(
+                f"Sourced {label}",
+                fg="green",
+            )
+        )
+
+    except subprocess.CalledProcessError as e:
+        raise click.ClickException(
+            click.style(
+                f"Failed to source setup file {file_path}: {e.stderr}",
+                fg="red",
+            )
+        )
+
+
+def source_isaacsim_ros_workspace(config: dict) -> None:
+    """Check and prepare ROS workspace environment variables.
+
+    Checks if the ROS setup files exist based on isaacsim_ros_ws config.
+    Returns environment variables that would be set by sourcing the setup files.
+
+    Args:
+        config: Parsed pow.toml configuration dictionary.
+
+    Returns:
+        dict[str, str]: Environment variables to be set for ROS workspace.
+    """
+
+    ros_config = config.get("sim", {}).get("ros", {})
+    isaacsim_ros_ws = ros_config.get("isaacsim_ros_ws", "")
+    ros_distro = ros_config.get("ros_distro", "humble")
+    enable_ros = ros_config.get("enable_ros", False)
+
+    if not enable_ros:
+        click.echo(click.style("ROS integration is disabled in config.", fg="yellow"))
+        return
+
+    if not isaacsim_ros_ws:
+        raise click.ClickException(
+            click.style(
+                "isaacsim_ros_ws is not set in pow.toml. "
+                "Set [sim.ros].isaacsim_ros_ws to your Isaac Sim ROS workspace path.",
+                fg="red",
+            )
+        )
+
+    ros_ws_path = Path(isaacsim_ros_ws).expanduser()
+
+    # Get current shell type
+    shell_path = os.environ.get("SHELL", "")
+    shell_type = Path(shell_path).name if shell_path else ""
+    supported_shells = ("bash", "zsh", "sh")
+    if shell_type not in supported_shells:
+        raise click.ClickException(
+            click.style(
+                f"Shell type '{shell_type}' is not supported. "
+                f"Supported shells: {', '.join(supported_shells)}",
+                fg="red",
+            )
+        )
+
+    # Construct paths based on the workspace structure
+    # Pattern: {isaacsim_ros_ws}/build_ws/{distro}/{distro}_ws/install/local_setup.bash
+    # Pattern: {isaacsim_ros_ws}/build_ws/{distro}/isaac_sim_ros_ws/install/local_setup.bash
+    distro_local_setup = (
+        ros_ws_path
+        / "build_ws"
+        / ros_distro
+        / f"{ros_distro}_ws"
+        / "install"
+        / f"local_setup.{shell_type}"
+    )
+    isaac_sim_ros_setup = (
+        ros_ws_path
+        / "build_ws"
+        / ros_distro
+        / "isaac_sim_ros_ws"
+        / "install"
+        / f"local_setup.{shell_type}"
+    )
+
+    if not distro_local_setup.exists():
+        raise click.ClickException(
+            click.style(
+                f"{ros_distro.capitalize()} setup file not found at {distro_local_setup}",
+                fg="red",
+            )
+        )
+
+    if not isaac_sim_ros_setup.exists():
+        raise click.ClickException(
+            click.style(
+                f"ROS setup file not found at {isaac_sim_ros_setup}",
+                fg="red",
+            )
+        )
+
+    # Source setup files
+    source_setup_file(
+        distro_local_setup,
+        shell_type,
+        f"{ros_distro.capitalize()} setup file at {distro_local_setup}",
+    )
+
+    source_setup_file(
+        isaac_sim_ros_setup,
+        shell_type,
+        f"ROS setup file at {isaac_sim_ros_setup}",
+    )
+
+
 @click.command(
     context_settings={"ignore_unknown_options": True, "allow_extra_args": True}
 )
@@ -75,7 +217,7 @@ def run(ctx) -> None:
     if project_root is None:
         raise click.ClickException(
             click.style(
-                "Could not find pow.toml in current directory or any parent directory.",
+                "Not initialized. Run 'pow sim init' in your project directory.",
                 fg="red",
             )
         )
@@ -99,8 +241,7 @@ def run(ctx) -> None:
             click.style("This command is supported only on Ubuntu.", fg="red")
         )
 
-    # TODO: implement the actual run logic
-    click.echo("TODO: check and source isaac ros workspace")
+    source_isaacsim_ros_workspace(config)
 
     click.echo(
         f"TDO: Pass Extra arguments to isaacsim command (support for example --reset-user): {ctx.args}"

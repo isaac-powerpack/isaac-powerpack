@@ -2,9 +2,9 @@
 version = "5.1.0"
 # add paths to additional extension folders
 ext_folders = []
-# Path to Isaac Sim assets, leave empty to use from default nvidia cloud
-# if path is provided, it will use the local assets path
-isaacsim_assets_path = ""
+# Run 'pow sim add local-assets' to set up local assets
+# to see local assets path, run 'pow sim info local-assets'
+use_local_assets = true
 
 [sim.ros]
 enable_ros = true

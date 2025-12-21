@@ -19,29 +19,6 @@ def get_isaacsim_kit_path():
         return None
 
 
-def update_pow_toml_assets_path(pow_toml_path: Path, asset_path: Path) -> None:
-    """Update pow.toml with isaacsim_assets_path.
-
-    Makes the path relative if inside cwd, or uses ~/ for home directory.
-
-    Args:
-        pow_toml_path: Path to the pow.toml file.
-        asset_path: Absolute path to the isaacsim_assets directory.
-
-    Returns:
-        str: The asset path string that was written to pow.toml.
-    """
-    # Update pow.toml with isaacsim_assets_path
-    content = pow_toml_path.read_text()
-    content = re.sub(
-        r"^(\s*isaacsim_assets_path\s*=\s*).*$",
-        rf'\g<1>"{asset_path}"',
-        content,
-        flags=re.MULTILINE,
-    )
-    pow_toml_path.write_text(content)
-
-
 def generate_settings_block(asset_base: Path) -> str:
     """Generate the settings block to add to the kit file.
 
@@ -293,13 +270,19 @@ def add_local_assets(
         extract_assets(target_path, version, keep_zip)
 
     # Update kit settings with local asset paths
-    update_kit_settings(target_path / "isaacsim_assets", version)
+    asset_path = update_kit_settings(target_path / "isaacsim_assets", version)
 
-    # Update pow.toml with isaacsim_assets_path
-    asset_path = target_path / "isaacsim_assets"
-    update_pow_toml_assets_path(pow_toml_path, asset_path)
+    # Set flag use_local_assets in pow.toml to true
+    pow_toml_content = pow_toml_path.read_text()
+    pow_toml_content = re.sub(
+        r"^use_local_assets\s*=\s*false",
+        "use_local_assets = true",
+        pow_toml_content,
+        flags=re.MULTILINE,
+    )
+    pow_toml_path.write_text(pow_toml_content)
 
-    click.echo(f"Updated isaacsim_assets_path settings in pow.toml:\n {asset_path}")
+    click.echo(f"Local assets installed at:\n {asset_path}")
     click.echo(
         click.style(
             f"Isaac sim local assets version {version} installation complete.",

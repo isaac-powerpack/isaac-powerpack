@@ -3,7 +3,7 @@ version = "5.1.0"
 # add paths to additional extension folders
 ext_folders = []
 # Run 'pow sim add local-assets' to set up local assets
-# to see local assets path, run 'pow sim info local-assets'
+# to see local assets installation path, run 'pow sim info local-assets'
 use_local_assets = true
 
 [sim.ros]

@@ -272,16 +272,6 @@ def add_local_assets(
     # Update kit settings with local asset paths
     asset_path = update_kit_settings(target_path / "isaacsim_assets", version)
 
-    # Set flag use_local_assets in pow.toml to true
-    pow_toml_content = pow_toml_path.read_text()
-    pow_toml_content = re.sub(
-        r"^use_local_assets\s*=\s*false",
-        "use_local_assets = true",
-        pow_toml_content,
-        flags=re.MULTILINE,
-    )
-    pow_toml_path.write_text(pow_toml_content)
-
     click.echo(f"Local assets installed at:\n {asset_path}")
     click.echo(
         click.style(

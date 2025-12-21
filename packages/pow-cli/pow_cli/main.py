@@ -4,6 +4,7 @@ import click
 
 from .sim.add.local_assets import add_local_assets
 from .sim.check.check import check_compatibility
+from .sim.info.info import info
 from .sim.init.init_sim import init_sim
 from .sim.run.run import run
 
@@ -40,6 +41,7 @@ add.add_command(add_local_assets)
 sim.add_command(run)
 sim.add_command(init_sim)
 sim.add_command(check_compatibility)
+sim.add_command(info)
 
 if __name__ == "__main__":
     pow()

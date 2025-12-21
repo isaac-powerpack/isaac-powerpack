@@ -264,7 +264,7 @@ def build_launch_command(
 
     headless = target_profile.get("headless", False)
     if headless:
-        launch_cmd += " --headless"
+        launch_cmd += " --no-window"
 
     enable_exts = target_profile.get("extensions", [])
     for ext in enable_exts:

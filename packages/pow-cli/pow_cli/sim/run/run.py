@@ -242,13 +242,57 @@ def run(ctx) -> None:
     else:
         click.echo(click.style("ROS integration is disabled."))
 
-    # TODO: construct isaacsim command
+    # construct isaacsim command
     launch_cmd = "uv run isaacsim"
-    exts_folder = config.get("sim", {}).get("exts_folder", [])
+    ext_folders = config.get("sim", {}).get("ext_folders", [])
 
-    if exts_folder:
+    if ext_folders:
         # append each ext folder to the command
-        for folder in exts_folder:
+        for folder in ext_folders:
             launch_cmd += f" --ext-folder {folder}"
 
-    click.echo(launch_cmd)
+    profiles = config.get("sim", {}).get("profiles", [])
+
+    target_profile = next((p for p in profiles if p.get("name") == "default"), None)
+    if target_profile is None:
+        raise click.ClickException(
+            click.style("No profile named 'default' found in pow.toml.", fg="red")
+        )
+
+    headless = target_profile.get("headless", False)
+    if headless:
+        launch_cmd += " --headless"
+
+    enable_exts = target_profile.get("extensions", [])
+    for ext in enable_exts:
+        launch_cmd += f" --enable {ext}"
+
+    raw_args = target_profile.get("raw_args", [])
+    for arg in raw_args:
+        launch_cmd += f" {arg}"
+
+    open_scene_path = target_profile.get("open_scene_path", "")
+    if open_scene_path:
+        full_scene_path = project_root / open_scene_path
+        launch_cmd += f' --exec "open_stage.py file://{full_scene_path}"'
+
+    # if there are extra args from CLI, append them
+    if ctx.args:
+        extra_args = " ".join(shlex.quote(arg) for arg in ctx.args)
+        launch_cmd += f" {extra_args}"
+
+    # --- Execute the command ---
+    # cpu performance mode
+    cpu_performance_mode = target_profile.get("cpu_performance_mode", False)
+    if cpu_performance_mode:
+        click.echo(
+            click.style(
+                "🔓 Setting CPU to performance mode requires 'sudo' privileges.",
+                fg="bright_black",
+            )
+        )
+        cmd = "sudo cpupower frequency-set -g performance"
+        subprocess.run(shlex.split(cmd), check=True)
+
+    # launch isaacsim with constructed command
+    subprocess.run(shlex.split(launch_cmd), check=True)

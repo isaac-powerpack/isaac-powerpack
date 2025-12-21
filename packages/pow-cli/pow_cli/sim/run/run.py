@@ -192,11 +192,111 @@ def source_isaacsim_ros_workspace(config: dict) -> None:
     )
 
 
+def get_target_profile(config: dict, profile_name: str = "default") -> dict:
+    """Get the target profile, merging with default profile if needed.
+
+    Args:
+        config: Parsed pow.toml configuration dictionary.
+        profile_name: Name of the profile to use (default: "default").
+
+    Returns:
+        dict: The target profile, merged with default if applicable.
+
+    Raises:
+        click.ClickException: If the specified profile is not found.
+    """
+    profiles = config.get("sim", {}).get("profiles", [])
+
+    default_profile = next((p for p in profiles if p.get("name") == "default"), None)
+    target_profile = None
+
+    if profile_name == "default":
+        target_profile = default_profile
+    else:
+        target_profile = next(
+            (p for p in profiles if p.get("name") == profile_name), None
+        )
+
+    if target_profile is None:
+        raise click.ClickException(
+            click.style(
+                f"No profile named '{profile_name}' found in pow.toml.", fg="red"
+            )
+        )
+
+    # Merge with default profile if it exists
+    if default_profile:
+        merged_profile = default_profile.copy()
+        merged_profile.update(target_profile)
+        target_profile = merged_profile
+
+    return target_profile
+
+
+def build_launch_command(
+    config: dict,
+    project_root: Path,
+    profile_name: str = "default",
+    extra_args: list[str] | None = None,
+) -> str:
+    """Build the Isaac Sim launch command from configuration.
+
+    Args:
+        config: Parsed pow.toml configuration dictionary.
+        project_root: Path to the project root directory.
+        profile_name: Name of the profile to use (default: "default").
+        extra_args: Optional list of extra CLI arguments to append.
+
+    Returns:
+        str: The constructed launch command.
+
+    Raises:
+        click.ClickException: If the specified profile is not found.
+    """
+    launch_cmd = "uv run isaacsim"
+    ext_folders = config.get("sim", {}).get("ext_folders", [])
+
+    if ext_folders:
+        for folder in ext_folders:
+            launch_cmd += f" --ext-folder {folder}"
+
+    target_profile = get_target_profile(config, profile_name)
+
+    headless = target_profile.get("headless", False)
+    if headless:
+        launch_cmd += " --headless"
+
+    enable_exts = target_profile.get("extensions", [])
+    for ext in enable_exts:
+        launch_cmd += f" --enable {ext}"
+
+    raw_args = target_profile.get("raw_args", [])
+    for arg in raw_args:
+        launch_cmd += f" {arg}"
+
+    open_scene_path = target_profile.get("open_scene_path", "")
+    if open_scene_path:
+        full_scene_path = project_root / open_scene_path
+        launch_cmd += f' --exec "open_stage.py file://{full_scene_path}"'
+
+    if extra_args:
+        extra_args_str = " ".join(shlex.quote(arg) for arg in extra_args)
+        launch_cmd += f" {extra_args_str}"
+
+    return launch_cmd
+
+
 @click.command(
     context_settings={"ignore_unknown_options": True, "allow_extra_args": True}
 )
+@click.option(
+    "-p",
+    "--profile",
+    default="default",
+    help="Profile name to use from pow.toml (default: 'default').",
+)
 @click.pass_context
-def run(ctx) -> None:
+def run(ctx, profile: str) -> None:
     """Run an Isaac Sim App.
 
     Loads configuration from pow.toml in the project root.
@@ -204,6 +304,7 @@ def run(ctx) -> None:
 
     Args:
         ctx: Click context containing extra arguments.
+        profile: Name of the profile to use.
 
     Returns:
         None
@@ -243,43 +344,10 @@ def run(ctx) -> None:
         click.echo(click.style("ROS integration is disabled."))
 
     # construct isaacsim command
-    launch_cmd = "uv run isaacsim"
-    ext_folders = config.get("sim", {}).get("ext_folders", [])
+    launch_cmd = build_launch_command(config, project_root, profile, ctx.args)
 
-    if ext_folders:
-        # append each ext folder to the command
-        for folder in ext_folders:
-            launch_cmd += f" --ext-folder {folder}"
-
-    profiles = config.get("sim", {}).get("profiles", [])
-
-    target_profile = next((p for p in profiles if p.get("name") == "default"), None)
-    if target_profile is None:
-        raise click.ClickException(
-            click.style("No profile named 'default' found in pow.toml.", fg="red")
-        )
-
-    headless = target_profile.get("headless", False)
-    if headless:
-        launch_cmd += " --headless"
-
-    enable_exts = target_profile.get("extensions", [])
-    for ext in enable_exts:
-        launch_cmd += f" --enable {ext}"
-
-    raw_args = target_profile.get("raw_args", [])
-    for arg in raw_args:
-        launch_cmd += f" {arg}"
-
-    open_scene_path = target_profile.get("open_scene_path", "")
-    if open_scene_path:
-        full_scene_path = project_root / open_scene_path
-        launch_cmd += f' --exec "open_stage.py file://{full_scene_path}"'
-
-    # if there are extra args from CLI, append them
-    if ctx.args:
-        extra_args = " ".join(shlex.quote(arg) for arg in ctx.args)
-        launch_cmd += f" {extra_args}"
+    # Get target profile for cpu_performance_mode check
+    target_profile = get_target_profile(config, profile)
 
     # --- Execute the command ---
     # cpu performance mode

@@ -117,11 +117,6 @@ def source_isaacsim_ros_workspace(config: dict) -> None:
     ros_config = config.get("sim", {}).get("ros", {})
     isaacsim_ros_ws = ros_config.get("isaacsim_ros_ws", "")
     ros_distro = ros_config.get("ros_distro", "humble")
-    enable_ros = ros_config.get("enable_ros", False)
-
-    if not enable_ros:
-        click.echo(click.style("ROS integration is disabled in config.", fg="yellow"))
-        return
 
     if not isaacsim_ros_ws:
         raise click.ClickException(
@@ -223,7 +218,6 @@ def run(ctx) -> None:
         )
 
     config = load_config(project_root)
-    click.echo(f"Loaded config: {config}")
 
     # Check x86_64 environment
     if platform.machine().lower() not in ("x86_64", "amd64"):
@@ -241,10 +235,20 @@ def run(ctx) -> None:
             click.style("This command is supported only on Ubuntu.", fg="red")
         )
 
-    source_isaacsim_ros_workspace(config)
+    ros_config = config.get("sim", {}).get("ros", {})
+    enable_ros = ros_config.get("enable_ros", False)
+    if enable_ros:
+        source_isaacsim_ros_workspace(config)
+    else:
+        click.echo(click.style("ROS integration is disabled."))
 
-    click.echo(
-        f"TDO: Pass Extra arguments to isaacsim command (support for example --reset-user): {ctx.args}"
-    )
+    # TODO: construct isaacsim command
+    launch_cmd = "uv run isaacsim"
+    exts_folder = config.get("sim", {}).get("exts_folder", [])
 
-    click.echo("TODO: ")
+    if exts_folder:
+        # append each ext folder to the command
+        for folder in exts_folder:
+            launch_cmd += f" --ext-folder {folder}"
+
+    click.echo(launch_cmd)

@@ -58,13 +58,22 @@ def load_config(project_root: Path) -> dict:
     return toml.load(config_path)
 
 
-def source_setup_file(file_path: Path, shell_type: str, description: str = "") -> None:
-    """Source a shell setup file and apply environment variables.
+def source_setup_file(
+    file_path: Path,
+    shell_type: str,
+    description: str = "",
+    env: dict[str, str] | None = None,
+) -> dict[str, str]:
+    """Source a shell setup file and return the resulting environment variables.
 
     Args:
         file_path: Path to the setup file to source.
         shell_type: Shell type (bash, zsh, sh).
         description: Optional description for logging.
+        env: Optional environment variables to use when sourcing.
+
+    Returns:
+        dict[str, str]: Environment variables after sourcing the setup file.
 
     Raises:
         click.ClickException: If sourcing fails.
@@ -77,12 +86,20 @@ def source_setup_file(file_path: Path, shell_type: str, description: str = "") -
     ]
 
     try:
-        subprocess.run(
+        result = subprocess.run(
             command,
             capture_output=True,
             text=True,
             check=True,
+            env=env,
         )
+
+        # Parse the environment variables from stdout
+        new_env = {}
+        for line in result.stdout.splitlines():
+            if "=" in line:
+                key, _, value = line.partition("=")
+                new_env[key] = value
 
         label = description if description else str(file_path)
         click.echo(
@@ -91,6 +108,8 @@ def source_setup_file(file_path: Path, shell_type: str, description: str = "") -
                 fg="green",
             )
         )
+
+        return new_env
 
     except subprocess.CalledProcessError as e:
         raise click.ClickException(
@@ -101,7 +120,7 @@ def source_setup_file(file_path: Path, shell_type: str, description: str = "") -
         )
 
 
-def source_isaacsim_ros_workspace(config: dict) -> None:
+def source_isaacsim_ros_workspace(config: dict) -> dict:
     """Check and prepare ROS workspace environment variables.
 
     Checks if the ROS setup files exist based on isaacsim_ros_ws config.
@@ -178,18 +197,21 @@ def source_isaacsim_ros_workspace(config: dict) -> None:
             )
         )
 
-    # Source setup files
-    source_setup_file(
+    # Source setup files, passing environment from first to second
+    distro_env = source_setup_file(
         distro_local_setup,
         shell_type,
         f"{ros_distro.capitalize()} setup file at {distro_local_setup}",
     )
 
-    source_setup_file(
+    output_env = source_setup_file(
         isaac_sim_ros_setup,
         shell_type,
         f"ROS setup file at {isaac_sim_ros_setup}",
+        env=distro_env,
     )
+
+    return output_env
 
 
 def get_target_profile(config: dict, profile_name: str = "default") -> dict:
@@ -338,8 +360,9 @@ def run(ctx, profile: str) -> None:
 
     ros_config = config.get("sim", {}).get("ros", {})
     enable_ros = ros_config.get("enable_ros", False)
+    source_env = None
     if enable_ros:
-        source_isaacsim_ros_workspace(config)
+        source_env = source_isaacsim_ros_workspace(config)
     else:
         click.echo(click.style("ROS integration is disabled."))
 
@@ -363,4 +386,4 @@ def run(ctx, profile: str) -> None:
         subprocess.run(shlex.split(cmd), check=True)
 
     # launch isaacsim with constructed command
-    subprocess.run(shlex.split(launch_cmd), check=True)
+    subprocess.run(shlex.split(launch_cmd), check=True, env=source_env)

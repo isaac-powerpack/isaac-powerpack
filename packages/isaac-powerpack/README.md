@@ -1,6 +1,4 @@
-<p align="center">
-    <img src="https://raw.githubusercontent.com/bemunin/isaac-powerpack/main/docs/public/logo.svg" width="400"/>
-</p>
+# Isaac Powerpack Foxglove Extension
 
 ✨ Isaac Powerpack’s goal is to build a Foxglove extension that simplifies NVIDIA Isaac ROS development on NVIDIA Jetson boards using Foxglove Studio.
 

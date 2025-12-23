@@ -1,13 +1,10 @@
 [project]
 name = "pow-cli"
-version = "0.1.0.dev1"
+version = "0.1.0a1"
 description = "Command line interface for Isaac Powerpack"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-    "click>=8.1.7",
-    "toml>=0.10.2",
-]
+dependencies = ["click>=8.1.7", "toml>=0.10.2"]
 license = "Apache-2.0"
 authors = [
     { name = "Titiwat Munintravong" },

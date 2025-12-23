@@ -63,6 +63,20 @@ Key features include:
 
 ## Usage
 
+### Pow CLI
+
+Pow CLI usage can be found in the example repository [pow-orin-starter](https://github.com/bemunin/pow-orin-starter).
+
+### Isaac Powerpack Foxglove
+
+**Installation**
+
+1. Install the Foxglove Studio desktop app from the [Foxglove Studio download page](https://foxglove.dev/downloads/).
+
+2. Follow the instructions in the **Easy installation** section of this blog post, [extending-px4-support](https://foxglove.dev/blog/extending-px4-support), and choose the `isaac-powerpack` package to install the Isaac Powerpack Foxglove extensions instead of PX4 Converter.
+
+**Feature Mapping**
+
 Here is the table of Isaac ROS Packages or Isaac Sim Extensions mapping to our corresponding Isaac Powerpack features:
 
 | Isaac ROS/Sim              | Isaac Powerpack Feature |

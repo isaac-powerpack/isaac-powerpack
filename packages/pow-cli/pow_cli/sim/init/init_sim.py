@@ -239,6 +239,7 @@ def setup_ros_workspace(pow_config: dict, is_existing: bool) -> dict:
         if not enable_ros:
             click.echo("ROS integration is disabled in existing pow.toml.")
             return pow_config
+
         ros_workspace_path = pow_config["sim"]["ros"].get("isaacsim_ros_ws", "")
         if ros_workspace_path:
             ros_workspace_path = Path(ros_workspace_path.replace("~", str(Path.home())))

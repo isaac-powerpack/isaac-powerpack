@@ -198,6 +198,11 @@ def setup_ros_workspace(pow_config: dict, is_existing: bool) -> dict:
     if "ros" not in pow_config["sim"]:
         pow_config["sim"]["ros"] = {}
 
+    # Setup .pow directory in user home
+    pow_dir = Path.home() / ".pow"
+    pow_dir.mkdir(parents=True, exist_ok=True)
+    ros_workspace_path = pow_dir / "IsaacSim-ros_workspaces"
+
     if not is_existing:
         # Ask if user wants to use ROS
         enable_ros = click.confirm(
@@ -229,14 +234,16 @@ def setup_ros_workspace(pow_config: dict, is_existing: bool) -> dict:
         selected_distro = ros_distros[choice - 1]
         pow_config["sim"]["ros"]["ros_distro"] = selected_distro
         click.echo(f"Selected ROS distro: {selected_distro}")
-
-    # Setup .pow directory in user home
-    pow_dir = Path.home() / ".pow"
-    pow_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        enable_ros = pow_config["sim"]["ros"].get("enable_ros", False)
+        if not enable_ros:
+            click.echo("ROS integration is disabled in existing pow.toml.")
+            return pow_config
+        ros_workspace_path = pow_config["sim"]["ros"].get("isaacsim_ros_ws", "")
+        if ros_workspace_path:
+            ros_workspace_path = Path(ros_workspace_path.replace("~", str(Path.home())))
 
     # Clone IsaacSim-ros_workspaces
-    ros_workspace_path = pow_dir / "IsaacSim-ros_workspaces"
-
     if ros_workspace_path.exists():
         click.echo("IsaacSim-ros_workspaces already exists")
     else:

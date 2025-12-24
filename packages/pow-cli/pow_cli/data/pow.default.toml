@@ -11,7 +11,7 @@ ros_distro = "humble"
 
 [[sim.profiles]]
 name = "default"
-cpu_performance_mode = true
+cpu_performance_mode = false
 headless = false
 extensions = ["isaacsim.code_editor.vscode"]
 raw_args = ["--/renderer/raytracingMotion/enabled=false"]

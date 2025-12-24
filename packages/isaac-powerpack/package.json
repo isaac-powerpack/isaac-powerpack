@@ -4,7 +4,7 @@
   "description": "Foxglove extension for visualizing and debugging Isaac ROS data.",
   "publisher": "bemunin",
   "homepage": "https://www.omnicraftlab.com",
-  "version": "0.0.1",
+  "version": "0.1.0a2",
   "license": "Apache 2.0",
   "main": "./dist/extension.js",
   "keywords": [

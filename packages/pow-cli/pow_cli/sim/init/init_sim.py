@@ -21,16 +21,11 @@ def generate_vscode_settings() -> bool:
     """
     try:
         settings_path = Path.cwd() / ".vscode" / "settings.json"
-        if settings_path.exists():
-            click.echo("Skipped creating vscode settings, already exists.")
-            return True
 
         # run isaacsim script to generate settings
         subprocess.run(
             ["uv", "run", "python", "-m", "isaacsim", "--generate-vscode-settings"],
             check=True,
-            capture_output=True,
-            text=True,
         )
         click.echo("Generated vscode settings for Isaac Sim")
 
@@ -40,7 +35,8 @@ def generate_vscode_settings() -> bool:
         content = settings_path.read_text()
 
         # Replace absolute paths before .venv with ${workspaceFolder}
-        # Pattern matches: "/any/path/.venv" -> "${workspaceFolder}/.venv"
+        # Pattern matches: "/any/path/.venv" -> "${wor
+        # kspaceFolder}/.venv"
         updated_content = re.sub(
             r'"[^"]+/\.venv/',
             r'"${workspaceFolder}/.venv/',
@@ -49,10 +45,6 @@ def generate_vscode_settings() -> bool:
 
         if content != updated_content:
             settings_path.write_text(updated_content)
-        else:
-            click.echo(
-                "No absolute paths to replace with ${workspaceFolder} in VS Code settings"
-            )
 
         return True
 
@@ -236,6 +228,7 @@ def setup_ros_workspace(pow_config: dict, is_existing: bool) -> dict:
         click.echo(f"Selected ROS distro: {selected_distro}")
     else:
         enable_ros = pow_config["sim"]["ros"].get("enable_ros", False)
+
         if not enable_ros:
             click.echo("ROS integration is disabled in existing pow.toml.")
             return pow_config

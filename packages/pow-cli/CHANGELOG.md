@@ -2,6 +2,13 @@
 
 All notable changes to the `pow-cli` package will be documented in this file.
 
+## [0.1.0a2] - 2025-12-25
+
+### Fixed
+
+- `pow sim init` now allows overwriting existing VS Code settings to resolve Pylance `reportMissingImports` errors for Isaac Sim packages.
+- Fixed an issue where the `ros_enable` flag did not correctly disable ROS workspace sourcing when set to `false` in an existing `pow.toml`.
+
 ## [0.1.0a1] - 2025-12-23
 
 ### Added

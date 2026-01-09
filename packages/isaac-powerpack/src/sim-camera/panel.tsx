@@ -1,10 +1,12 @@
 import { PanelExtensionContext, Topic } from "@foxglove/extension";
 import { ReactElement, useEffect, useLayoutEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { useSettingsPanel } from "./hooks/useSettingsPanel";
 
 function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactElement {
   const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
   const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
+  const { state } = useSettingsPanel(context, topics);
 
   useLayoutEffect(() => {
     context.onRender = (renderState, done) => {
@@ -22,6 +24,7 @@ function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactE
     <div>
       <h1>SimCamera Panel</h1>
       <p>{topics?.length} topics</p>
+      <p>isEnabled: {state.data.enabled ? "On" : "Off"}</p>
     </div>
   );
 }

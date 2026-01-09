@@ -8,7 +8,7 @@ import { useFilterTopics } from "../../lib/hooks/useFilterTopics";
 export type PanelState = {
   data: {
     enabled: boolean;
-    publishTopic?: string;
+    cameraControlTopic?: string;
   };
   display: {};
 };
@@ -24,7 +24,7 @@ export function useSettingsPanel(
     return {
       data: {
         enabled: initialState?.data?.enabled ?? true,
-        publishTopic: initialState?.data?.publishTopic,
+        cameraControlTopic: initialState?.data?.cameraControlTopic,
       },
       display: {},
     };
@@ -43,7 +43,10 @@ export function useSettingsPanel(
   useEffect(() => {
     context.saveState(state);
 
-    const topicOptions = allCameraTopics.map((topic) => ({ value: topic.name, label: topic.name }));
+    const topicOptions = allCameraTopics.map((topic) => ({
+      label: topic.name,
+      value: topic.name,
+    }));
 
     context.updatePanelSettingsEditor({
       actionHandler,
@@ -56,12 +59,12 @@ export function useSettingsPanel(
               input: "boolean",
               value: state.data.enabled,
             },
-            publishTopic: {
+            cameraControlTopic: {
               label: "Camera Topic",
               input: "select",
               options: topicOptions,
-              value: state.data.publishTopic,
-              help: "Topic to publish for control camera in Isaac Sim. (geometry_msgs/msg/Pose)",
+              value: state.data.cameraControlTopic,
+              help: "Topic to publish for camera control in Isaac Sim. (geometry_msgs/msg/Pose)",
             },
           },
         },

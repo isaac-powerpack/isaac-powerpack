@@ -42,22 +42,26 @@ export function useKeyboardControl(
       if (!"qweasduiojkl".includes(key)) return;
 
       setPressedKey(key);
+      let poseMessage = {
+        position: {
+          x: 0.0,
+          y: 0.0,
+          z: 0.0,
+        },
+        orientation: {
+          x: 0.0,
+          y: 0.0,
+          z: 0.0,
+          w: 1.0,
+        },
+      };
 
-      // Publish Pose message when 'q' is pressed
-      if (key === "q" && state.data.cameraControlTopic) {
-        const poseMessage = {
-          position: {
-            x: 0.5,
-            y: 0.0,
-            z: 0.0,
-          },
-          orientation: {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-            w: 1.0,
-          },
-        };
+      // Move camera front in camera frame
+      if (key === "q") {
+        poseMessage.position.x = 0.5;
+      }
+
+      if (state.data.cameraControlTopic) {
         context.publish?.(state.data.cameraControlTopic, poseMessage);
       }
     };

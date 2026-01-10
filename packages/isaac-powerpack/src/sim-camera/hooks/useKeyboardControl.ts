@@ -3,6 +3,9 @@ import { useEffect, useRef, useState } from "react";
 
 import { PanelState } from "./useSettingsPanel";
 
+const deltaPosMove = 0.1; //meters per key press
+// const deltaOrientationMove = 0.1;
+
 export function useKeyboardControl(
   context: PanelExtensionContext,
   state: PanelState,
@@ -56,9 +59,20 @@ export function useKeyboardControl(
         },
       };
 
-      // Move camera front in camera frame
-      if (key === "q") {
-        poseMessage.position.x = 0.5;
+      // Map keyboard controls to camera movement in cameara frame:
+      // w/s: forward/backward (x-axis), a/d: left/right (y-axis), q/e: up/down (z-axis)
+      if (key === "w") {
+        poseMessage.position.x = deltaPosMove;
+      } else if (key === "s") {
+        poseMessage.position.x = -deltaPosMove;
+      } else if (key === "a") {
+        poseMessage.position.y = -deltaPosMove;
+      } else if (key === "d") {
+        poseMessage.position.y = deltaPosMove;
+      } else if (key === "q") {
+        poseMessage.position.z = deltaPosMove;
+      } else if (key === "e") {
+        poseMessage.position.z = -deltaPosMove;
       }
 
       if (state.data.cameraControlTopic) {

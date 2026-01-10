@@ -2,9 +2,22 @@ import { PanelExtensionContext } from "@foxglove/extension";
 import { useEffect, useRef, useState } from "react";
 
 import { PanelState } from "./useSettingsPanel";
+import { Quaternion, Euler, MathUtils } from "three";
 
 const deltaPosMove = 0.1; //meters per key press
-// const deltaOrientationMove = 0.1;
+const deltaOrientationDeg = 2; //degrees per key press
+
+function eulerToQuat(rollDeg: number, pitchDeg: number, yawDeg: number) {
+  // convert degrees to radians
+  const roll = MathUtils.degToRad(rollDeg);
+  const pitch = MathUtils.degToRad(pitchDeg);
+  const yaw = MathUtils.degToRad(yawDeg);
+  // ZYX order for ros2
+  const euler = new Euler(roll, pitch, yaw, "ZYX");
+  const quaternion = new Quaternion();
+  quaternion.setFromEuler(euler);
+  return quaternion;
+}
 
 export function useKeyboardControl(
   context: PanelExtensionContext,
@@ -51,6 +64,7 @@ export function useKeyboardControl(
           y: 0.0,
           z: 0.0,
         },
+        // identity quaternion representing no rotation
         orientation: {
           x: 0.0,
           y: 0.0,
@@ -73,6 +87,34 @@ export function useKeyboardControl(
         poseMessage.position.z = deltaPosMove;
       } else if (key === "e") {
         poseMessage.position.z = -deltaPosMove;
+      }
+
+      // u/o: roll left/right, i/k: pitch up/down, j/l: yaw left/right
+      let roll = 0.0;
+      let pitch = 0.0;
+      let yaw = 0.0;
+
+      if (key === "u") {
+        roll = -deltaOrientationDeg;
+      } else if (key === "o") {
+        roll = deltaOrientationDeg;
+      } else if (key === "i") {
+        pitch = deltaOrientationDeg;
+      } else if (key === "k") {
+        pitch = -deltaOrientationDeg;
+      } else if (key === "j") {
+        yaw = -deltaOrientationDeg;
+      } else if (key === "l") {
+        yaw = deltaOrientationDeg;
+      }
+
+      // update Pose orientation if there is any rotation value by keypress
+      if (roll !== 0 || pitch !== 0 || yaw !== 0) {
+        const quat = eulerToQuat(roll, pitch, yaw);
+        poseMessage.orientation.x = quat.x;
+        poseMessage.orientation.y = quat.y;
+        poseMessage.orientation.z = quat.z;
+        poseMessage.orientation.w = quat.w;
       }
 
       if (state.data.cameraControlTopic) {

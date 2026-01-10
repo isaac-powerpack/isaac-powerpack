@@ -3,7 +3,7 @@ import { ReactElement, useEffect, useLayoutEffect, useMemo, useState } from "rea
 import { createRoot } from "react-dom/client";
 
 import { BoundingBoxLayer } from "./comps/BoundingBoxLayer";
-import { Canvas } from "./comps/Canvas";
+import { Canvas } from "../lib/comps/Canvas";
 import { ImageLayer } from "./comps/ImageLayer";
 import { detection2DArrayConverter } from "./converter";
 import { useDetectionLabel } from "./hooks/useDetectionLabel";

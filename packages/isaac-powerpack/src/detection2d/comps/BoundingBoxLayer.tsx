@@ -2,7 +2,7 @@ import { Color, ImageAnnotations, PointsAnnotationType } from "@foxglove/schemas
 import { useMemo } from "react";
 import { Layer, Line, Circle, Label, Tag, Text } from "react-konva";
 
-import { useCanvasStore } from "./Canvas";
+import { useCanvasStore } from "../../lib/comps/Canvas";
 import { calculateImageFit } from "../../lib/utils/images";
 
 type BoundingBoxLayerProps = {

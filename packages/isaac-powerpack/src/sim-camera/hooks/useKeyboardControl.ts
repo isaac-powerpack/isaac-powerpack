@@ -1,11 +1,8 @@
 import { PanelExtensionContext } from "@foxglove/extension";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { PanelState } from "./useSettingsPanel";
 import { Quaternion, Euler, MathUtils } from "three";
-
-const deltaPosMove = 0.1; //meters per key press
-const deltaOrientationDeg = 2; //degrees per key press
 
 function eulerToQuat(rollDeg: number, pitchDeg: number, yawDeg: number) {
   // convert degrees to radians
@@ -27,6 +24,18 @@ export function useKeyboardControl(
 } {
   const [pressedKey, setPressedKey] = useState<string | null>(null);
   const prevTopic = useRef<string | undefined>();
+
+  //meters per key press
+  const deltaPosMove = useMemo(
+    () => state.data.positionMeterDelta,
+    [state.data.positionMeterDelta],
+  );
+
+  //degrees per key press
+  const deltaOrientationDeg = useMemo(
+    () => state.data.orientationDegDelta,
+    [state.data.orientationDegDelta],
+  );
 
   // Advertise the publish topic
   useEffect(() => {
@@ -137,7 +146,13 @@ export function useKeyboardControl(
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [state.data.enabled, state.data.cameraControlTopic]);
+  }, [
+    state.data.enabled,
+    state.data.cameraControlTopic,
+    deltaPosMove,
+    deltaOrientationDeg,
+    context,
+  ]);
   return {
     pressedKey,
   };

@@ -5,10 +5,15 @@ import { useCallback, useEffect, useState } from "react";
 
 import { useFilterTopics } from "../../lib/hooks/useFilterTopics";
 
+const defaultDeltaPosMove = 0.1; //meters per key press
+const defaultDeltaOrientationDeg = 2; //degrees per key press
+
 export type PanelState = {
   data: {
     enabled: boolean;
     cameraControlTopic?: string;
+    positionMeterDelta: number; // meter move change per key press
+    orientationDegDelta: number; // degree orientation change per key press
   };
   display: {};
 };
@@ -25,6 +30,8 @@ export function useSettingsPanel(
       data: {
         enabled: initialState?.data?.enabled ?? true,
         cameraControlTopic: initialState?.data?.cameraControlTopic,
+        positionMeterDelta: initialState?.data?.positionMeterDelta ?? defaultDeltaPosMove,
+        orientationDegDelta: initialState?.data?.orientationDegDelta ?? defaultDeltaOrientationDeg,
       },
       display: {},
     };
@@ -65,6 +72,18 @@ export function useSettingsPanel(
               options: topicOptions,
               value: state.data.cameraControlTopic,
               help: "Topic to publish for camera control in Isaac Sim. (geometry_msgs/msg/Pose)",
+            },
+            positionMeterDelta: {
+              label: "Position Delta (meters)",
+              input: "number",
+              value: state.data.positionMeterDelta ?? defaultDeltaPosMove,
+              help: "Position change in meters per key press.",
+            },
+            orientationDegDelta: {
+              label: "Orientation Delta (degrees)",
+              input: "number",
+              value: state.data.orientationDegDelta ?? defaultDeltaOrientationDeg,
+              help: "Orientation change in degrees per key press.",
             },
           },
         },

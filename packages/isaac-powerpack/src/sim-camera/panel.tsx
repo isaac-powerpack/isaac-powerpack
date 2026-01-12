@@ -1,8 +1,9 @@
 import { PanelExtensionContext, Topic } from "@foxglove/extension";
 import { ReactElement, useEffect, useLayoutEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { useSettingsPanel } from "./hooks/useSettingsPanel";
+
 import { useKeyboardControl } from "./hooks/useKeyboardControl";
+import { useSettingsPanel } from "./hooks/useSettingsPanel";
 
 function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactElement {
   const [renderDone, setRenderDone] = useState<(() => void) | undefined>();

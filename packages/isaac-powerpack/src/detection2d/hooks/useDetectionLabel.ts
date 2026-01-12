@@ -31,9 +31,9 @@ export function useDetectionLabel(
   const labels =
     variables?.get(variableName ?? "") ?? variables?.get(DEFAULT_OBJECT_LABEL_VAR_NAME);
 
-  if (!labels) {
+  if (labels == undefined) {
     return new Map();
   }
 
-  return new Map(Object.entries(labels));
+  return new Map(Object.entries(labels) as Array<[string, string]>);
 }

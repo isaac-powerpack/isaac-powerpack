@@ -15,7 +15,6 @@ export type PanelState = {
     positionMeterDelta: number; // meter move change per key press
     orientationDegDelta: number; // degree orientation change per key press
   };
-  display: {};
 };
 
 export function useSettingsPanel(
@@ -76,13 +75,13 @@ export function useSettingsPanel(
             positionMeterDelta: {
               label: "Position Delta (meters)",
               input: "number",
-              value: state.data.positionMeterDelta ?? defaultDeltaPosMove,
+              value: state.data.positionMeterDelta,
               help: "Position change in meters per key press.",
             },
             orientationDegDelta: {
               label: "Orientation Delta (degrees)",
               input: "number",
-              value: state.data.orientationDegDelta ?? defaultDeltaOrientationDeg,
+              value: state.data.orientationDegDelta,
               help: "Orientation change in degrees per key press.",
             },
           },

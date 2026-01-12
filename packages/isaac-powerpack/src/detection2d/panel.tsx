@@ -3,13 +3,13 @@ import { ReactElement, useEffect, useLayoutEffect, useMemo, useState } from "rea
 import { createRoot } from "react-dom/client";
 
 import { BoundingBoxLayer } from "./comps/BoundingBoxLayer";
-import { Canvas } from "../lib/comps/Canvas";
 import { ImageLayer } from "./comps/ImageLayer";
 import { detection2DArrayConverter } from "./converter";
 import { useDetectionLabel } from "./hooks/useDetectionLabel";
 import { useRenderImage } from "./hooks/useRenderImage";
 import { useSettingsPanel } from "./hooks/useSettingsPanel";
 import { Detection2DArrayMessageEvent, ImageMessageEvent } from "./types";
+import { Canvas } from "../lib/comps/Canvas";
 import { isValidString } from "../lib/utils/topics";
 
 function Detection2DPanel({ context }: { context: PanelExtensionContext }): ReactElement {

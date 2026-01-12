@@ -1,6 +1,6 @@
 import { ExtensionContext } from "@foxglove/extension";
-import { PREFIX } from "./constants";
 
+import { PREFIX } from "./constants";
 import { Detection2DArray, detection2DArrayConverter, initDetection2DPanel } from "./detection2d";
 import { initSimCameraPanel } from "./sim-camera/panel";
 

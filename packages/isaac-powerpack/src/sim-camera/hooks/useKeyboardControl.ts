@@ -1,8 +1,8 @@
 import { PanelExtensionContext } from "@foxglove/extension";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Quaternion, Euler, MathUtils } from "three";
 
 import { PanelState } from "./useSettingsPanel";
-import { Quaternion, Euler, MathUtils } from "three";
 
 function eulerToQuat(rollDeg: number, pitchDeg: number, yawDeg: number) {
   // convert degrees to radians
@@ -61,13 +61,17 @@ export function useKeyboardControl(
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!state.data.enabled) return;
+      if (!state.data.enabled) {
+        return;
+      }
 
       const key = event.key.toLowerCase();
-      if (!"qweasduiojkl".includes(key)) return;
+      if (!"qweasduiojkl".includes(key)) {
+        return;
+      }
 
       setPressedKey(key);
-      let poseMessage = {
+      const poseMessage = {
         position: {
           x: 0.0,
           y: 0.0,
@@ -132,7 +136,9 @@ export function useKeyboardControl(
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      if (!state.data.enabled) return;
+      if (!state.data.enabled) {
+        return;
+      }
 
       const key = event.key.toLowerCase();
       if ("qweasduiojkl".includes(key)) {

@@ -2,8 +2,10 @@ import { PanelExtensionContext, Topic } from "@foxglove/extension";
 import { ReactElement, useEffect, useLayoutEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
+import { KeyboardDisplayLayer } from "./comps/KeyboardDisplay";
 import { useKeyboardControl } from "./hooks/useKeyboardControl";
 import { useSettingsPanel } from "./hooks/useSettingsPanel";
+import { Canvas } from "../lib/comps/Canvas";
 
 function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactElement {
   const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
@@ -26,10 +28,9 @@ function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactE
 
   return (
     <div>
-      <h1>SimCamera Panel</h1>
-      <p>{topics?.length} topics</p>
-      <p>isEnabled: {state.data.enabled ? "On" : "Off"}</p>
-      <p>Pressed Key: {pressedKey ?? "None"}</p>
+      <Canvas>
+        <KeyboardDisplayLayer pressedKey={pressedKey} />
+      </Canvas>
     </div>
   );
 }

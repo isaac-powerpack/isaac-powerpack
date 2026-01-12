@@ -21,14 +21,27 @@ const keyDescription: Record<string, string> = {
 
 export function KeyboardDisplayLayer({
   pressedKey,
+  width,
+  height,
 }: {
   pressedKey: string | null;
+  width: number;
+  height: number;
 }): React.ReactElement {
-  const keySize = 60;
-  const keySpacing = 10;
-  const startX = 50;
-  const startY = 50;
-  const columnSpacing = 250;
+  // Scale based on available width - aim for ~70% of width for 2 columns
+  const scale = Math.min(width / 600, 1.5); // Max scale of 1.5x
+  const keySize = 60 * scale;
+  const keySpacing = 10 * scale;
+  const columnSpacing = 250 * scale;
+
+  // Calculate total layout dimensions
+  const columnWidth = 3 * keySize + 2 * keySpacing; // 3 keys with 2 gaps
+  const totalLayoutWidth = columnWidth + columnSpacing + columnWidth;
+  const totalLayoutHeight = 2 * keySize + keySpacing; // 2 rows with 1 gap
+
+  // Center the layout horizontally and vertically
+  const startX = Math.max((width - totalLayoutWidth) / 2, 20) + 10;
+  const startY = Math.max((height - totalLayoutHeight) / 2, 20);
 
   // Define keyboard layout for position keys (Q W E / A S D)
   const positionLayout = [
@@ -44,7 +57,7 @@ export function KeyboardDisplayLayer({
 
   const renderKeyboard = (layout: string[][], offsetX: number) => {
     return layout.map((row, rowIndex) => {
-      const rowOffset = 0; //rowIndex === 1 ? keySize / 4 : 0;
+      const rowOffset = 0;
       return row.map((key, colIndex) => (
         <Key
           key={key}
@@ -52,6 +65,7 @@ export function KeyboardDisplayLayer({
           isPressed={pressedKey === key}
           x={offsetX + rowOffset + colIndex * (keySize + keySpacing)}
           y={startY + rowIndex * (keySize + keySpacing)}
+          size={keySize}
           description={keyDescription[key] ?? undefined}
         />
       ));

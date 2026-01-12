@@ -5,13 +5,15 @@ import { createRoot } from "react-dom/client";
 import { KeyboardDisplayLayer } from "./comps/KeyboardDisplay";
 import { useKeyboardControl } from "./hooks/useKeyboardControl";
 import { useSettingsPanel } from "./hooks/useSettingsPanel";
-import { Canvas } from "../lib/comps/Canvas";
+import { Canvas, useCanvasStore } from "../lib/comps/Canvas";
 
 function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactElement {
   const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
   const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
   const { state } = useSettingsPanel(context, topics);
   const { pressedKey } = useKeyboardControl(context, state);
+  const canvasWidth = useCanvasStore((canvasState) => canvasState.dimensions.width);
+  const canvasHeight = useCanvasStore((canvasState) => canvasState.dimensions.height);
 
   useLayoutEffect(() => {
     context.onRender = (renderState, done) => {
@@ -27,9 +29,11 @@ function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactE
   }, [renderDone]);
 
   return (
-    <div>
+    <div
+      style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}
+    >
       <Canvas>
-        <KeyboardDisplayLayer pressedKey={pressedKey} />
+        <KeyboardDisplayLayer pressedKey={pressedKey} width={canvasWidth} height={canvasHeight} />
       </Canvas>
     </div>
   );

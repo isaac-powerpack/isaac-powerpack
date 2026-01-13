@@ -66,6 +66,7 @@ export function KeyboardDisplayLayer({
           y={startY + rowIndex * (keySize + keySpacing)}
           size={keySize}
           description={keyDescription[key] ?? undefined}
+          descriptionPos={rowIndex === 0 ? "top" : "bottom"}
         />
       ));
     });

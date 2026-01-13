@@ -7,6 +7,7 @@ interface KeyProps {
   y: number;
   size: number;
   description?: string;
+  descriptionPos?: "top" | "bottom";
 }
 
 export function Key({
@@ -16,11 +17,13 @@ export function Key({
   x,
   y,
   size,
+  descriptionPos,
 }: KeyProps): React.ReactElement {
   const fontSize = size * 0.5; // 50% of key size
-  const descriptionFontSize = size * 0.1; // 10% of key size
+  const descriptionFontSize = size * 0.18; // 18% of key size
   const cornerRadius = size * 0.167; // ~10px at 60px size
-  const descriptionY = size + 10;
+
+  const descriptionY = descriptionPos === "top" ? -(descriptionFontSize + 10) : size + 10;
   const descriptionWidth = size * 1.33; // ~80px at 60px size
   const descriptionX = -(descriptionWidth - size) / 2;
 
@@ -48,7 +51,7 @@ export function Key({
         <Text
           text={description}
           fontSize={descriptionFontSize}
-          fill="#000000"
+          fill="#00000070"
           width={descriptionWidth}
           align="center"
           y={descriptionY}

@@ -6,24 +6,26 @@ interface KeyProps {
   x: number;
   y: number;
   size: number;
-  description?: string;
-  descriptionPos?: "top" | "bottom";
+  isShowDesc: boolean;
+  desc?: string;
+  descPosition?: "top" | "bottom";
 }
 
 export function Key({
   keyLabel,
   isPressed,
-  description,
+  desc,
   x,
   y,
   size,
-  descriptionPos,
+  descPosition,
+  isShowDesc,
 }: KeyProps): React.ReactElement {
   const fontSize = size * 0.5; // 50% of key size
-  const descriptionFontSize = size * 0.18; // 18% of key size
+  const descriptionFontSize = size * 0.2; // 20% of key size
   const cornerRadius = size * 0.167; // ~10px at 60px size
 
-  const descriptionY = descriptionPos === "top" ? -(descriptionFontSize + 10) : size + 10;
+  const descriptionY = descPosition === "top" ? -(descriptionFontSize + 10) : size + 10;
   const descriptionWidth = size * 1.33; // ~80px at 60px size
   const descriptionX = -(descriptionWidth - size) / 2;
 
@@ -47,9 +49,9 @@ export function Key({
         align="center"
         verticalAlign="middle"
       />
-      {description && (
+      {isShowDesc && desc && (
         <Text
-          text={description}
+          text={desc}
           fontSize={descriptionFontSize}
           fill="#00000070"
           width={descriptionWidth}

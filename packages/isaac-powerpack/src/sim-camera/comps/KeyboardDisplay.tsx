@@ -1,4 +1,4 @@
-import { Layer } from "react-konva";
+import { Layer, Text } from "react-konva";
 
 import { Key } from "./Key";
 
@@ -63,8 +63,9 @@ export function KeyboardDisplayLayer({
           x={offsetX + rowOffset + colIndex * (keySize + keySpacing)}
           y={startY + rowIndex * (keySize + keySpacing)}
           size={keySize}
-          description={keyDescription[key] ?? undefined}
-          descriptionPos={rowIndex === 0 ? "top" : "bottom"}
+          desc={keyDescription[key] ?? undefined}
+          descPosition={rowIndex === 0 ? "top" : "bottom"}
+          isShowDesc={true}
         />
       ));
     });
@@ -77,6 +78,26 @@ export function KeyboardDisplayLayer({
 
       {/* Orientation keys - Second column */}
       {renderKeyboard(orientationLayout, startX + columnWidth + columnSpacing)}
+
+      <Text
+        text={"Position Control".toUpperCase()}
+        fontSize={14 * scale}
+        fill="#00000070"
+        width={columnWidth}
+        align="center"
+        y={startY - 54 * scale}
+        x={startX}
+      />
+
+      <Text
+        text={"Orientation Control".toUpperCase()}
+        fontSize={14 * scale}
+        fill="#00000070"
+        width={columnWidth}
+        align="center"
+        y={startY - 54 * scale}
+        x={startX + columnWidth + columnSpacing}
+      />
     </Layer>
   );
 }

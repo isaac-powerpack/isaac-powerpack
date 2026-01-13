@@ -36,12 +36,10 @@ export function KeyboardDisplayLayer({
 
   // Calculate total layout dimensions
   const columnWidth = 3 * keySize + 2 * keySpacing; // 3 keys with 2 gaps
-  const totalLayoutHeight = 2 * keySize + keySpacing; // 2 rows with 1 gap
 
   // Center the layout horizontally and vertically
-  const startX = width / 2 - columnWidth - columnSpacing / 2; //Math.max((width - totalLayoutWidth) / 2, 20) + 10;
-  const startY = Math.max((height - totalLayoutHeight) / 2, 20);
-
+  const startX = width / 2 - columnWidth - columnSpacing / 2;
+  const startY = height / 2 - keySize;
   // Define keyboard layout for position keys (Q W E / A S D)
   const positionLayout = [
     ["q", "w", "e"],

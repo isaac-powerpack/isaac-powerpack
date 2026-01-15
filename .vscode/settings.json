@@ -651,5 +651,9 @@
   // Use "flake8" for linting
   "python.linting.pylintEnabled": false,
   "python.linting.flake8Enabled": true,
-  "ROS2.distro": "humble"
+  "ROS2.distro": "humble",
+  "python.autoComplete.extraPaths": [
+    "/opt/ros/humble/lib/python3.10/site-packages",
+    "/opt/ros/humble/local/lib/python3.10/dist-packages"
+  ]
 }

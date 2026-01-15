@@ -1824,7 +1824,7 @@ wheels = [
 
 [[package]]
 name = "pow-cli"
-version = "0.1.0.dev1"
+version = "0.1.0a2"
 source = { editable = "packages/pow-cli" }
 dependencies = [
     { name = "click" },

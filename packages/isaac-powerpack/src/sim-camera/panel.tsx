@@ -3,6 +3,7 @@ import { ReactElement, useEffect, useLayoutEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 import { KeyboardDisplayLayer } from "./comps/KeyboardDisplay";
+import { StatusBadge } from "./comps/StatusBadge";
 import { useKeyboardControl } from "./hooks/useKeyboardControl";
 import { useSettingsPanel } from "./hooks/useSettingsPanel";
 import { Canvas, useCanvasStore } from "../lib/comps/Canvas";
@@ -36,6 +37,7 @@ function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactE
     <div
       style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}
     >
+      <StatusBadge isEnabled={state.data.enabled} theme={theme} />
       <Canvas>
         <KeyboardDisplayLayer
           theme={theme}
@@ -43,6 +45,7 @@ function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactE
           width={canvasWidth}
           height={canvasHeight}
           isShowDesc={state.display.showDesc}
+          isEnabled={state.data.enabled}
         />
       </Canvas>
     </div>

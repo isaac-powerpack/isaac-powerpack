@@ -25,6 +25,7 @@ interface KeyboardDisplayLayerProps {
   width: number;
   height: number;
   isShowDesc?: boolean;
+  isEnabled?: boolean;
 }
 
 export function KeyboardDisplayLayer({
@@ -33,6 +34,7 @@ export function KeyboardDisplayLayer({
   width,
   height,
   isShowDesc = true,
+  isEnabled = true,
 }: KeyboardDisplayLayerProps): React.ReactElement {
   // Scale based on available width - aim for ~70% of width for 2 columns
   const scale = Math.min(width / 600, 1.5); // Max scale of 1.5x
@@ -73,10 +75,13 @@ export function KeyboardDisplayLayer({
           descPosition={rowIndex === 0 ? "top" : "bottom"}
           isShowDesc={isShowDesc}
           theme={theme}
+          isEnabled={isEnabled}
         />
       ));
     });
   };
+
+  const textFill = isEnabled ? keyPalette(theme).text.description : keyPalette(theme).text.disabled;
 
   return (
     <Layer>
@@ -91,7 +96,7 @@ export function KeyboardDisplayLayer({
           <Text
             text={"Position Control".toUpperCase()}
             fontSize={14 * scale}
-            fill={keyPalette(theme).text.description}
+            fill={textFill}
             width={columnWidth}
             align="center"
             y={startY - 54 * scale}
@@ -100,7 +105,7 @@ export function KeyboardDisplayLayer({
           <Text
             text={"Orientation Control".toUpperCase()}
             fontSize={14 * scale}
-            fill={keyPalette(theme).text.description}
+            fill={textFill}
             width={columnWidth}
             align="center"
             y={startY - 54 * scale}

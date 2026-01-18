@@ -12,11 +12,17 @@ export type Styles = {
       stroke: string;
       strokeWidth: number;
     };
+    disabled: {
+      fill: string;
+      stroke: string;
+      strokeWidth: number;
+    };
   };
   text: {
     default: string;
     pressed: string;
     description: string;
+    disabled: string;
   };
 };
 
@@ -30,6 +36,7 @@ interface KeyProps {
   desc?: string;
   descPosition?: "top" | "bottom";
   theme?: "light" | "dark";
+  isEnabled?: boolean;
 }
 
 // Default styles to Light theme
@@ -45,11 +52,17 @@ export const palette = (theme: "light" | "dark"): Styles => ({
       stroke: theme === "dark" ? "#5B3FD4" : "#5B3FD4",
       strokeWidth: 3,
     },
+    disabled: {
+      fill: theme === "dark" ? "#1a1a1a" : "#f5f5f5",
+      stroke: theme === "dark" ? "#3a3a3a" : "#cccccc",
+      strokeWidth: 1,
+    },
   },
   text: {
     default: theme === "dark" ? "#e0e0e0" : "#000000",
     pressed: "#ffffff",
     description: theme === "dark" ? "#888888" : "#00000070",
+    disabled: theme === "dark" ? "#4a4a4a" : "#a0a0a0",
   },
 });
 
@@ -63,7 +76,9 @@ export function Key({
   descPosition,
   isShowDesc,
   theme = "light",
+  isEnabled = true,
 }: KeyProps): React.ReactElement {
+  // responsive size calculations
   const fontSize = size * 0.5; // 50% of key size
   const descriptionFontSize = size * 0.2; // 20% of key size
   const cornerRadius = size * 0.167; // ~10px at 60px size
@@ -72,8 +87,10 @@ export function Key({
   const descriptionWidth = size * 1.33; // ~80px at 60px size
   const descriptionX = -(descriptionWidth - size) / 2;
 
-  const keyStyle = isPressed ? palette(theme).key.pressed : palette(theme).key.default;
-  const textColor = isPressed ? palette(theme).text.pressed : palette(theme).text.default;
+  // styling
+  const keyState = !isEnabled ? "disabled" : isPressed ? "pressed" : "default";
+  const keyStyle = palette(theme).key[keyState];
+  const textColor = palette(theme).text[keyState];
 
   return (
     <Group x={x} y={y}>
@@ -99,7 +116,7 @@ export function Key({
         <Text
           text={desc}
           fontSize={descriptionFontSize}
-          fill={palette(theme).text.description}
+          fill={!isEnabled ? palette(theme).text.disabled : palette(theme).text.description}
           width={descriptionWidth}
           align="center"
           y={descriptionY}

@@ -1,6 +1,6 @@
 import { Layer, Text } from "react-konva";
 
-import { Key } from "./Key";
+import { Key, palette as keyPalette } from "./Key";
 
 const keyDescription: Record<string, string> = {
   // Position keys
@@ -20,12 +20,14 @@ const keyDescription: Record<string, string> = {
 };
 
 interface KeyboardDisplayLayerProps {
+  theme: "light" | "dark";
   pressedKeys: Set<string> | null;
   width: number;
   height: number;
 }
 
 export function KeyboardDisplayLayer({
+  theme,
   pressedKeys,
   width,
   height,
@@ -68,6 +70,7 @@ export function KeyboardDisplayLayer({
           desc={keyDescription[key] ?? undefined}
           descPosition={rowIndex === 0 ? "top" : "bottom"}
           isShowDesc={true}
+          theme={theme}
         />
       ));
     });
@@ -84,7 +87,7 @@ export function KeyboardDisplayLayer({
       <Text
         text={"Position Control".toUpperCase()}
         fontSize={14 * scale}
-        fill="#00000070"
+        fill={keyPalette(theme).text.description}
         width={columnWidth}
         align="center"
         y={startY - 54 * scale}
@@ -94,7 +97,7 @@ export function KeyboardDisplayLayer({
       <Text
         text={"Orientation Control".toUpperCase()}
         fontSize={14 * scale}
-        fill="#00000070"
+        fill={keyPalette(theme).text.description}
         width={columnWidth}
         align="center"
         y={startY - 54 * scale}

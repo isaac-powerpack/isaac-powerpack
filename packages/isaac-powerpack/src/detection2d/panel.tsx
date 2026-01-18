@@ -40,6 +40,10 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
 
   //----- Panel Initialization -----
   useLayoutEffect(() => {
+    context.watch("topics");
+    context.watch("variables");
+    context.watch("currentFrame");
+
     context.onRender = (renderState, done) => {
       setRenderDone(() => done);
       setTopics(renderState.topics ?? []);
@@ -67,9 +71,6 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
         }
       }
     };
-    context.watch("topics");
-    context.watch("variables");
-    context.watch("currentFrame");
   }, [context, state.data.imageTopic, state.data.detectionTopic]);
 
   const imageCanvas = useRenderImage(imgEvent);

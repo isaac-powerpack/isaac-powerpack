@@ -14,14 +14,18 @@ function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactE
   const { pressedKeys } = useKeyboardControl(context, state);
   const canvasWidth = useCanvasStore((canvasState) => canvasState.dimensions.width);
   const canvasHeight = useCanvasStore((canvasState) => canvasState.dimensions.height);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useLayoutEffect(() => {
+    context.watch("colorScheme");
+    context.watch("topics");
+    context.watch("currentFrame");
+
     context.onRender = (renderState, done) => {
       setRenderDone(() => done);
       setTopics(renderState.topics ?? []);
+      setTheme(renderState.colorScheme === "dark" ? "dark" : "light");
     };
-    context.watch("topics");
-    context.watch("currentFrame");
   }, [context]);
 
   useEffect(() => {
@@ -33,7 +37,12 @@ function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactE
       style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}
     >
       <Canvas>
-        <KeyboardDisplayLayer pressedKeys={pressedKeys} width={canvasWidth} height={canvasHeight} />
+        <KeyboardDisplayLayer
+          theme={theme}
+          pressedKeys={pressedKeys}
+          width={canvasWidth}
+          height={canvasHeight}
+        />
       </Canvas>
     </div>
   );

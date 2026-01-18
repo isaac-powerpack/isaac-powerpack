@@ -50,12 +50,7 @@ function Detection2DPanel({ context }: { context: PanelExtensionContext }): Reac
       setVariables(renderState.variables as ReadonlyMap<string, VariableValue>);
 
       // message frame update
-      const hasFrame =
-        renderState.currentFrame != undefined &&
-        renderState.currentFrame.length > 0 &&
-        isValidString(state.data.imageTopic) &&
-        isValidString(state.data.detectionTopic);
-
+      const hasFrame = renderState.currentFrame != undefined && renderState.currentFrame.length > 0;
       if (hasFrame) {
         for (const msg of renderState.currentFrame) {
           switch (msg.topic) {

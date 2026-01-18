@@ -19,15 +19,17 @@ const keyDescription: Record<string, string> = {
   l: "Yaw Right",
 };
 
-export function KeyboardDisplayLayer({
-  pressedKey,
-  width,
-  height,
-}: {
-  pressedKey: string | null;
+interface KeyboardDisplayLayerProps {
+  pressedKeys: Set<string> | null;
   width: number;
   height: number;
-}): React.ReactElement {
+}
+
+export function KeyboardDisplayLayer({
+  pressedKeys,
+  width,
+  height,
+}: KeyboardDisplayLayerProps): React.ReactElement {
   // Scale based on available width - aim for ~70% of width for 2 columns
   const scale = Math.min(width / 600, 1.5); // Max scale of 1.5x
   const keySize = 60 * scale;
@@ -59,7 +61,7 @@ export function KeyboardDisplayLayer({
         <Key
           key={key}
           keyLabel={key}
-          isPressed={pressedKey === key}
+          isPressed={pressedKeys?.has(key) ?? false}
           x={offsetX + rowOffset + colIndex * (keySize + keySpacing)}
           y={startY + rowIndex * (keySize + keySpacing)}
           size={keySize}

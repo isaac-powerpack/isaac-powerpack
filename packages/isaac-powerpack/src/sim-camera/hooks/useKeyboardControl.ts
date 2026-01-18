@@ -20,9 +20,9 @@ export function useKeyboardControl(
   context: PanelExtensionContext,
   state: PanelState,
 ): {
-  pressedKey: string | null;
+  pressedKeys: Set<string>;
 } {
-  const [pressedKey, setPressedKey] = useState<string | null>(null);
+  const [pressedKeys, setPressedKeys] = useState<Set<string>>(() => new Set());
   const prevTopic = useRef<string | undefined>();
 
   //meters per key press
@@ -70,69 +70,89 @@ export function useKeyboardControl(
         return;
       }
 
-      setPressedKey(key);
-      const poseMessage = {
-        position: {
-          x: 0.0,
-          y: 0.0,
-          z: 0.0,
-        },
-        // identity quaternion representing no rotation
-        orientation: {
-          x: 0.0,
-          y: 0.0,
-          z: 0.0,
-          w: 1.0,
-        },
-      };
-
-      // Map keyboard controls to camera movement in cameara frame:
-      // w/s: forward/backward (x-axis), a/d: left/right (y-axis), q/e: up/down (z-axis)
-      if (key === "w") {
-        poseMessage.position.x = deltaPosMove;
-      } else if (key === "s") {
-        poseMessage.position.x = -deltaPosMove;
-      } else if (key === "a") {
-        poseMessage.position.y = -deltaPosMove;
-      } else if (key === "d") {
-        poseMessage.position.y = deltaPosMove;
-      } else if (key === "q") {
-        poseMessage.position.z = deltaPosMove;
-      } else if (key === "e") {
-        poseMessage.position.z = -deltaPosMove;
+      // Prevent key repeat events
+      if (event.repeat) {
+        return;
       }
 
-      // u/o: roll left/right, i/k: pitch up/down, j/l: yaw left/right
-      let roll = 0.0;
-      let pitch = 0.0;
-      let yaw = 0.0;
+      setPressedKeys((prev) => {
+        const newKeys = new Set(prev);
+        newKeys.add(key);
 
-      if (key === "u") {
-        roll = -deltaOrientationDeg;
-      } else if (key === "o") {
-        roll = deltaOrientationDeg;
-      } else if (key === "i") {
-        pitch = deltaOrientationDeg;
-      } else if (key === "k") {
-        pitch = -deltaOrientationDeg;
-      } else if (key === "j") {
-        yaw = -deltaOrientationDeg;
-      } else if (key === "l") {
-        yaw = deltaOrientationDeg;
-      }
+        console.log("Keys pressed:", Array.from(newKeys).join(""));
 
-      // update Pose orientation if there is any rotation value by keypress
-      if (roll !== 0 || pitch !== 0 || yaw !== 0) {
-        const quat = eulerToQuat(roll, pitch, yaw);
-        poseMessage.orientation.x = quat.x;
-        poseMessage.orientation.y = quat.y;
-        poseMessage.orientation.z = quat.z;
-        poseMessage.orientation.w = quat.w;
-      }
+        // Calculate combined pose message from all pressed keys
+        const poseMessage = {
+          position: {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+          },
+          // identity quaternion representing no rotation
+          orientation: {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+            w: 1.0,
+          },
+        };
 
-      if (state.data.cameraControlTopic) {
-        context.publish?.(state.data.cameraControlTopic, poseMessage);
-      }
+        // Accumulate position changes from all pressed keys
+        // Map keyboard controls to camera movement in camera frame:
+        // w/s: forward/backward (x-axis), a/d: left/right (y-axis), q/e: up/down (z-axis)
+        newKeys.forEach((k) => {
+          if (k === "w") {
+            poseMessage.position.x += deltaPosMove;
+          } else if (k === "s") {
+            poseMessage.position.x -= deltaPosMove;
+          } else if (k === "a") {
+            poseMessage.position.y -= deltaPosMove;
+          } else if (k === "d") {
+            poseMessage.position.y += deltaPosMove;
+          } else if (k === "q") {
+            poseMessage.position.z += deltaPosMove;
+          } else if (k === "e") {
+            poseMessage.position.z -= deltaPosMove;
+          }
+        });
+
+        // Accumulate rotation changes from all pressed keys
+        // u/o: roll left/right, i/k: pitch up/down, j/l: yaw left/right
+        let roll = 0.0;
+        let pitch = 0.0;
+        let yaw = 0.0;
+
+        newKeys.forEach((k) => {
+          if (k === "u") {
+            roll -= deltaOrientationDeg;
+          } else if (k === "o") {
+            roll += deltaOrientationDeg;
+          } else if (k === "i") {
+            pitch += deltaOrientationDeg;
+          } else if (k === "k") {
+            pitch -= deltaOrientationDeg;
+          } else if (k === "j") {
+            yaw -= deltaOrientationDeg;
+          } else if (k === "l") {
+            yaw += deltaOrientationDeg;
+          }
+        });
+
+        // update Pose orientation if there is any rotation value by keypress
+        if (roll !== 0 || pitch !== 0 || yaw !== 0) {
+          const quat = eulerToQuat(roll, pitch, yaw);
+          poseMessage.orientation.x = quat.x;
+          poseMessage.orientation.y = quat.y;
+          poseMessage.orientation.z = quat.z;
+          poseMessage.orientation.w = quat.w;
+        }
+
+        if (state.data.cameraControlTopic) {
+          context.publish?.(state.data.cameraControlTopic, poseMessage);
+        }
+
+        return newKeys;
+      });
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
@@ -142,7 +162,11 @@ export function useKeyboardControl(
 
       const key = event.key.toLowerCase();
       if ("qweasduiojkl".includes(key)) {
-        setPressedKey(null);
+        setPressedKeys((prev) => {
+          const newKeys = new Set(prev);
+          newKeys.delete(key);
+          return newKeys;
+        });
       }
     };
 
@@ -159,7 +183,8 @@ export function useKeyboardControl(
     deltaOrientationDeg,
     context,
   ]);
+
   return {
-    pressedKey,
+    pressedKeys,
   };
 }

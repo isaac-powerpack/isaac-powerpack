@@ -11,7 +11,7 @@ function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactE
   const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
   const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
   const { state } = useSettingsPanel(context, topics);
-  const { pressedKey } = useKeyboardControl(context, state);
+  const { pressedKeys } = useKeyboardControl(context, state);
   const canvasWidth = useCanvasStore((canvasState) => canvasState.dimensions.width);
   const canvasHeight = useCanvasStore((canvasState) => canvasState.dimensions.height);
 
@@ -33,7 +33,7 @@ function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactE
       style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}
     >
       <Canvas>
-        <KeyboardDisplayLayer pressedKey={pressedKey} width={canvasWidth} height={canvasHeight} />
+        <KeyboardDisplayLayer pressedKeys={pressedKeys} width={canvasWidth} height={canvasHeight} />
       </Canvas>
     </div>
   );

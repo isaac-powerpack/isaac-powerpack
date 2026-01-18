@@ -74,14 +74,14 @@ export function useSettingsPanel(
           label: "General",
           fields: {
             imageTopic: {
-              label: "Image Topic",
+              label: "Image topic",
               input: "select",
               options: topicOptions,
               value: state.data.imageTopic,
               help: "Topic to subscribe for image data. (sensor_msgs/msg/Image)",
             },
             detectionTopic: {
-              label: "Detection Topic",
+              label: "Detection topic",
               input: "select",
               options: detectionTopicOptions,
               value: state.data.detectionTopic,
@@ -89,7 +89,7 @@ export function useSettingsPanel(
             },
 
             objectLabelData: {
-              label: "Object Label Data",
+              label: "Object label data",
               input: "string",
               value: state.data.objectLabelData,
               help: `Variable name pointed to the data mapping between id and label. Specify "${DEFAULT_OBJECT_LABEL_VAR_NAME}" to use the default extension mapping data.`,
@@ -100,7 +100,7 @@ export function useSettingsPanel(
           label: "Display",
           fields: {
             boundingBox: {
-              label: "Bounding Box",
+              label: "Bounding box",
               input: "boolean",
               value: state.display.boundingBox,
             },
@@ -115,12 +115,12 @@ export function useSettingsPanel(
               value: state.display.score,
             },
             objectLabel: {
-              label: "Object Label",
+              label: "Object label",
               input: "boolean",
               value: state.display.objectLabel,
             },
             fontSize: {
-              label: "Font Size",
+              label: "Font size",
               input: "number",
               value: state.display.fontSize,
               min: 6,

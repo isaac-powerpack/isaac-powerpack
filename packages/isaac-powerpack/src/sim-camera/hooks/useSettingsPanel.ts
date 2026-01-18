@@ -15,6 +15,9 @@ export type PanelState = {
     positionMeterDelta: number; // meter move change per key press
     orientationDegDelta: number; // degree orientation change per key press
   };
+  display: {
+    showDesc: boolean; // whether to show description text in the panel
+  };
 };
 
 export function useSettingsPanel(
@@ -32,7 +35,9 @@ export function useSettingsPanel(
         positionMeterDelta: initialState?.data?.positionMeterDelta ?? defaultDeltaPosMove,
         orientationDegDelta: initialState?.data?.orientationDegDelta ?? defaultDeltaOrientationDeg,
       },
-      display: {},
+      display: {
+        showDesc: initialState?.display?.showDesc ?? true,
+      },
     };
   });
 
@@ -66,20 +71,20 @@ export function useSettingsPanel(
               value: state.data.enabled,
             },
             cameraControlTopic: {
-              label: "Camera Topic",
+              label: "Camera topic",
               input: "select",
               options: topicOptions,
               value: state.data.cameraControlTopic,
               help: "Topic to publish for camera control in Isaac Sim. (geometry_msgs/msg/Pose)",
             },
             positionMeterDelta: {
-              label: "Position Delta (meters)",
+              label: "Position delta (meters)",
               input: "number",
               value: state.data.positionMeterDelta,
               help: "Position change in meters per key press.",
             },
             orientationDegDelta: {
-              label: "Orientation Delta (degrees)",
+              label: "Orientation delta (degrees)",
               input: "number",
               value: state.data.orientationDegDelta,
               help: "Orientation change in degrees per key press.",
@@ -88,7 +93,14 @@ export function useSettingsPanel(
         },
         display: {
           label: "Display",
-          fields: {},
+          fields: {
+            showDesc: {
+              label: "Show description",
+              input: "boolean",
+              value: state.display.showDesc,
+              help: "Show description text guide in the panel.",
+            },
+          },
         },
       },
     });

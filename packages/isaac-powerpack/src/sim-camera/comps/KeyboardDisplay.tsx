@@ -24,6 +24,7 @@ interface KeyboardDisplayLayerProps {
   pressedKeys: Set<string> | null;
   width: number;
   height: number;
+  isShowDesc?: boolean;
 }
 
 export function KeyboardDisplayLayer({
@@ -31,6 +32,7 @@ export function KeyboardDisplayLayer({
   pressedKeys,
   width,
   height,
+  isShowDesc = true,
 }: KeyboardDisplayLayerProps): React.ReactElement {
   // Scale based on available width - aim for ~70% of width for 2 columns
   const scale = Math.min(width / 600, 1.5); // Max scale of 1.5x
@@ -69,7 +71,7 @@ export function KeyboardDisplayLayer({
           size={keySize}
           desc={keyDescription[key] ?? undefined}
           descPosition={rowIndex === 0 ? "top" : "bottom"}
-          isShowDesc={true}
+          isShowDesc={isShowDesc}
           theme={theme}
         />
       ));
@@ -84,25 +86,28 @@ export function KeyboardDisplayLayer({
       {/* Orientation keys - Second column */}
       {renderKeyboard(orientationLayout, startX + columnWidth + columnSpacing)}
 
-      <Text
-        text={"Position Control".toUpperCase()}
-        fontSize={14 * scale}
-        fill={keyPalette(theme).text.description}
-        width={columnWidth}
-        align="center"
-        y={startY - 54 * scale}
-        x={startX}
-      />
-
-      <Text
-        text={"Orientation Control".toUpperCase()}
-        fontSize={14 * scale}
-        fill={keyPalette(theme).text.description}
-        width={columnWidth}
-        align="center"
-        y={startY - 54 * scale}
-        x={startX + columnWidth + columnSpacing}
-      />
+      {isShowDesc && (
+        <>
+          <Text
+            text={"Position Control".toUpperCase()}
+            fontSize={14 * scale}
+            fill={keyPalette(theme).text.description}
+            width={columnWidth}
+            align="center"
+            y={startY - 54 * scale}
+            x={startX}
+          />
+          <Text
+            text={"Orientation Control".toUpperCase()}
+            fontSize={14 * scale}
+            fill={keyPalette(theme).text.description}
+            width={columnWidth}
+            align="center"
+            y={startY - 54 * scale}
+            x={startX + columnWidth + columnSpacing}
+          />
+        </>
+      )}
     </Layer>
   );
 }

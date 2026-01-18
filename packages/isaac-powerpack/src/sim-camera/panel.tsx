@@ -42,6 +42,7 @@ function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactE
           pressedKeys={pressedKeys}
           width={canvasWidth}
           height={canvasHeight}
+          isShowDesc={state.display.showDesc}
         />
       </Canvas>
     </div>

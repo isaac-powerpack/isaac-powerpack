@@ -1,6 +1,7 @@
 import { Layer, Text } from "react-konva";
 
 import { Key, palette as keyPalette } from "./Key";
+import { useCanvasStore } from "../../lib/comps/Canvas";
 
 const keyDescription: Record<string, string> = {
   // Position keys
@@ -22,8 +23,6 @@ const keyDescription: Record<string, string> = {
 interface KeyboardDisplayLayerProps {
   theme: "light" | "dark";
   pressedKeys: Set<string> | null;
-  width: number;
-  height: number;
   isShowDesc?: boolean;
   isEnabled?: boolean;
 }
@@ -31,11 +30,13 @@ interface KeyboardDisplayLayerProps {
 export function KeyboardDisplayLayer({
   theme,
   pressedKeys,
-  width,
-  height,
   isShowDesc = true,
   isEnabled = true,
 }: KeyboardDisplayLayerProps): React.ReactElement {
+  const {
+    dimensions: { width, height },
+  } = useCanvasStore();
+
   // Scale based on available width - aim for ~70% of width for 2 columns
   const scale = Math.min(width / 600, 1.5); // Max scale of 1.5x
   const keySize = 60 * scale;

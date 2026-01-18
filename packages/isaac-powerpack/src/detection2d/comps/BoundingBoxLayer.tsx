@@ -20,7 +20,7 @@ export function BoundingBoxLayer({
   image,
   isShow,
 }: BoundingBoxLayerProps): React.JSX.Element | null {
-  const dimensions = useCanvasStore((state) => state.dimensions);
+  const { dimensions } = useCanvasStore();
 
   const { scale, x, y } = useMemo(() => calculateImageFit(dimensions, image), [dimensions, image]);
 

@@ -6,15 +6,13 @@ import { KeyboardDisplayLayer } from "./comps/KeyboardDisplay";
 import { StatusBadge } from "./comps/StatusBadge";
 import { useKeyboardControl } from "./hooks/useKeyboardControl";
 import { useSettingsPanel } from "./hooks/useSettingsPanel";
-import { Canvas, useCanvasStore } from "../lib/comps/Canvas";
+import { Canvas } from "../lib/comps/Canvas";
 
 function PoseTeleopPanel({ context }: { context: PanelExtensionContext }): ReactElement {
   const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
   const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
   const { state } = useSettingsPanel(context, topics);
   const { pressedKeys } = useKeyboardControl(context, state);
-  const canvasWidth = useCanvasStore((canvasState) => canvasState.dimensions.width);
-  const canvasHeight = useCanvasStore((canvasState) => canvasState.dimensions.height);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useLayoutEffect(() => {
@@ -42,8 +40,6 @@ function PoseTeleopPanel({ context }: { context: PanelExtensionContext }): React
         <KeyboardDisplayLayer
           theme={theme}
           pressedKeys={pressedKeys}
-          width={canvasWidth}
-          height={canvasHeight}
           isShowDesc={state.display.showDesc}
           isEnabled={state.data.enabled}
         />

@@ -10,7 +10,6 @@ import { useRenderImage } from "./hooks/useRenderImage";
 import { useSettingsPanel } from "./hooks/useSettingsPanel";
 import { Detection2DArrayMessageEvent, ImageMessageEvent } from "./types";
 import { Canvas } from "../lib/comps/Canvas";
-import { isValidString } from "../lib/utils/topics";
 
 function Detection2DPanel({ context }: { context: PanelExtensionContext }): ReactElement {
   const [imgEvent, setImgEvent] = useState<ImageMessageEvent>();

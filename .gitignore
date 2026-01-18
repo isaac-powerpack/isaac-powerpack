@@ -109,3 +109,6 @@ www/js/*
 
 # Release files
 *.foxe
+
+# VS Code
+.vscode/

@@ -94,7 +94,7 @@ export function KeyboardDisplayLayer({
       {isShowDesc && (
         <>
           <Text
-            text={"Position Control".toUpperCase()}
+            text={"Position".toUpperCase()}
             fontSize={14 * scale}
             fill={textFill}
             width={columnWidth}
@@ -103,7 +103,7 @@ export function KeyboardDisplayLayer({
             x={startX}
           />
           <Text
-            text={"Orientation Control".toUpperCase()}
+            text={"Orientation".toUpperCase()}
             fontSize={14 * scale}
             fill={textFill}
             width={columnWidth}

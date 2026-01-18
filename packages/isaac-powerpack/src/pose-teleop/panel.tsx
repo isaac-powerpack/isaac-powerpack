@@ -8,7 +8,7 @@ import { useKeyboardControl } from "./hooks/useKeyboardControl";
 import { useSettingsPanel } from "./hooks/useSettingsPanel";
 import { Canvas, useCanvasStore } from "../lib/comps/Canvas";
 
-function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactElement {
+function PoseTeleopPanel({ context }: { context: PanelExtensionContext }): ReactElement {
   const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
   const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
   const { state } = useSettingsPanel(context, topics);
@@ -52,9 +52,9 @@ function SimCameraPanel({ context }: { context: PanelExtensionContext }): ReactE
   );
 }
 
-export function initSimCameraPanel(context: PanelExtensionContext): () => void {
+export function initPoseTeleopPanel(context: PanelExtensionContext): () => void {
   const root = createRoot(context.panelElement);
-  root.render(<SimCameraPanel context={context} />);
+  root.render(<PoseTeleopPanel context={context} />);
 
   return () => {
     root.unmount();

@@ -5,13 +5,12 @@ import { useCallback, useEffect, useState } from "react";
 
 import { useFilterTopics } from "../../lib/hooks/useFilterTopics";
 
-const defaultLinearSpeedMeter = 0.1; //meters per key press
-const defaultAngularSpeedRad = 2; //degrees per key press
+const defaultLinearSpeedMeter = 0.2; //m/s
+const defaultAngularSpeedRad = 0.0873; //rad/s (~5 degrees) per key press
 
 export type PanelState = {
   data: {
     enabled: boolean;
-    allowOnlyFocus: boolean;
     targetTopic?: string;
     linearSpeedMeter: number; // meter move change per key press
     angularSpeedRad: number; // degree orientation change per key press
@@ -32,7 +31,6 @@ export function useSettingsPanel(
     return {
       data: {
         enabled: initialState?.data?.enabled ?? true,
-        allowOnlyFocus: initialState?.data?.allowOnlyFocus ?? false,
         targetTopic: initialState?.data?.targetTopic,
         linearSpeedMeter: initialState?.data?.linearSpeedMeter ?? defaultLinearSpeedMeter,
         angularSpeedRad: initialState?.data?.angularSpeedRad ?? defaultAngularSpeedRad,
@@ -71,12 +69,6 @@ export function useSettingsPanel(
               label: "Enable",
               input: "boolean",
               value: state.data.enabled,
-            },
-            allowOnlyFocus: {
-              label: "Allow Only Focus",
-              input: "boolean",
-              value: state.data.allowOnlyFocus,
-              help: "When allow, keyboard control will only work when the teleop panel in Foxglove Studio is focused.",
             },
             targetTopic: {
               label: "Topic",

@@ -158,14 +158,7 @@ export function useKeyboardControl(
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [
-    state.data.enabled,
-    state.data.allowOnlyFocus,
-    state.data.targetTopic,
-    linearSpeed,
-    angularSpeed,
-    context,
-  ]);
+  }, [state.data.enabled, state.data.targetTopic, linearSpeed, angularSpeed, context]);
 
   return {
     pressedKeys,

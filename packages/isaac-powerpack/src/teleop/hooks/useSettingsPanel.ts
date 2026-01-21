@@ -5,15 +5,16 @@ import { useCallback, useEffect, useState } from "react";
 
 import { useFilterTopics } from "../../lib/hooks/useFilterTopics";
 
-const defaultDeltaPosMove = 0.1; //meters per key press
-const defaultDeltaOrientationDeg = 2; //degrees per key press
+const defaultLinearSpeedMeter = 0.1; //meters per key press
+const defaultAngularSpeedRad = 2; //degrees per key press
 
 export type PanelState = {
   data: {
     enabled: boolean;
-    cameraControlTopic?: string;
-    positionMeterDelta: number; // meter move change per key press
-    orientationDegDelta: number; // degree orientation change per key press
+    allowOnlyFocus: boolean;
+    targetTopic?: string;
+    linearSpeedMeter: number; // meter move change per key press
+    angularSpeedRad: number; // degree orientation change per key press
   };
   display: {
     showDesc: boolean; // whether to show description text in the panel
@@ -24,16 +25,17 @@ export function useSettingsPanel(
   context: PanelExtensionContext,
   topics: readonly Topic[] | undefined,
 ): { state: PanelState; setState: React.Dispatch<React.SetStateAction<PanelState>> } {
-  const allCameraTopics = useFilterTopics(topics, ["geometry_msgs/msg/Pose"]);
+  const allCameraTopics = useFilterTopics(topics, ["geometry_msgs/msg/Twist"]);
   // Define panel settings data
   const [state, setState] = useState<PanelState>(() => {
     const initialState = context.initialState as Partial<PanelState> | undefined;
     return {
       data: {
         enabled: initialState?.data?.enabled ?? true,
-        cameraControlTopic: initialState?.data?.cameraControlTopic,
-        positionMeterDelta: initialState?.data?.positionMeterDelta ?? defaultDeltaPosMove,
-        orientationDegDelta: initialState?.data?.orientationDegDelta ?? defaultDeltaOrientationDeg,
+        allowOnlyFocus: initialState?.data?.allowOnlyFocus ?? false,
+        targetTopic: initialState?.data?.targetTopic,
+        linearSpeedMeter: initialState?.data?.linearSpeedMeter ?? defaultLinearSpeedMeter,
+        angularSpeedRad: initialState?.data?.angularSpeedRad ?? defaultAngularSpeedRad,
       },
       display: {
         showDesc: initialState?.display?.showDesc ?? true,
@@ -70,24 +72,30 @@ export function useSettingsPanel(
               input: "boolean",
               value: state.data.enabled,
             },
-            cameraControlTopic: {
-              label: "Camera topic",
+            allowOnlyFocus: {
+              label: "Allow Only Focus",
+              input: "boolean",
+              value: state.data.allowOnlyFocus,
+              help: "When allow, keyboard control will only work when the teleop panel in Foxglove Studio is focused.",
+            },
+            targetTopic: {
+              label: "Topic",
               input: "select",
               options: topicOptions,
-              value: state.data.cameraControlTopic,
-              help: "Topic to publish for camera control in Isaac Sim. (geometry_msgs/msg/Pose)",
+              value: state.data.targetTopic,
+              help: "Topic to publish Twist messages (geometry_msgs/msg/Twist)",
             },
-            positionMeterDelta: {
-              label: "Position delta (meters)",
+            linearSpeedMeter: {
+              label: "Linear speed (m/s)",
               input: "number",
-              value: state.data.positionMeterDelta,
-              help: "Position change in meters per key press.",
+              value: state.data.linearSpeedMeter,
+              help: "Linear speed change in m/s.",
             },
-            orientationDegDelta: {
-              label: "Orientation delta (degrees)",
+            angularSpeedRad: {
+              label: "Angular speed (rad/s)",
               input: "number",
-              value: state.data.orientationDegDelta,
-              help: "Orientation change in degrees per key press.",
+              value: state.data.angularSpeedRad,
+              help: "Angular speed change in rad/s.",
             },
           },
         },

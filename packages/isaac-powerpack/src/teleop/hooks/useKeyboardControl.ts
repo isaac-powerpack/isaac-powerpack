@@ -26,20 +26,17 @@ export function useKeyboardControl(
   const prevTopic = useRef<string | undefined>();
 
   //meters per key press
-  const deltaPosMove = useMemo(
-    () => state.data.positionMeterDelta,
-    [state.data.positionMeterDelta],
-  );
+  const deltaPosMove = useMemo(() => state.data.linearSpeedMeter, [state.data.linearSpeedMeter]);
 
   //degrees per key press
   const deltaOrientationDeg = useMemo(
-    () => state.data.orientationDegDelta,
-    [state.data.orientationDegDelta],
+    () => state.data.angularSpeedRad,
+    [state.data.angularSpeedRad],
   );
 
   // Advertise the publish topic
   useEffect(() => {
-    const isTopicChanged = prevTopic.current !== state.data.cameraControlTopic;
+    const isTopicChanged = prevTopic.current !== state.data.targetTopic;
 
     // Unadvertise previous topic if it changed
     if (isTopicChanged && prevTopic.current) {
@@ -47,17 +44,17 @@ export function useKeyboardControl(
     }
 
     // Advertise new topic
-    if (state.data.cameraControlTopic) {
-      context.advertise?.(state.data.cameraControlTopic, "geometry_msgs/msg/Pose");
-      prevTopic.current = state.data.cameraControlTopic;
+    if (state.data.targetTopic) {
+      context.advertise?.(state.data.targetTopic, "geometry_msgs/msg/Pose");
+      prevTopic.current = state.data.targetTopic;
     }
 
     return () => {
-      if (state.data.cameraControlTopic) {
-        context.unadvertise?.(state.data.cameraControlTopic);
+      if (state.data.targetTopic) {
+        context.unadvertise?.(state.data.targetTopic);
       }
     };
-  }, [context, state.data.cameraControlTopic]);
+  }, [context, state.data.targetTopic]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -147,8 +144,8 @@ export function useKeyboardControl(
           poseMessage.orientation.w = quat.w;
         }
 
-        if (state.data.cameraControlTopic) {
-          context.publish?.(state.data.cameraControlTopic, poseMessage);
+        if (state.data.targetTopic) {
+          context.publish?.(state.data.targetTopic, poseMessage);
         }
 
         return newKeys;
@@ -178,7 +175,8 @@ export function useKeyboardControl(
     };
   }, [
     state.data.enabled,
-    state.data.cameraControlTopic,
+    state.data.allowOnlyFocus,
+    state.data.targetTopic,
     deltaPosMove,
     deltaOrientationDeg,
     context,

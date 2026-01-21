@@ -61,7 +61,7 @@ export function useKeyboardControl(
         const newKeys = new Set(prev);
         newKeys.add(key);
 
-        console.log("Keys pressed:", Array.from(newKeys).join(""));
+        // console.log("Keys pressed:", Array.from(newKeys).join(""));
 
         // Calculate combined Twist message from all pressed keys
         const twistMessage = {

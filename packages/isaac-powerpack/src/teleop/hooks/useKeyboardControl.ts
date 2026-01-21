@@ -1,20 +1,7 @@
 import { PanelExtensionContext } from "@foxglove/extension";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Quaternion, Euler, MathUtils } from "three";
 
 import { PanelState } from "./useSettingsPanel";
-
-function eulerToQuat(rollDeg: number, pitchDeg: number, yawDeg: number) {
-  // convert degrees to radians
-  const roll = MathUtils.degToRad(rollDeg);
-  const pitch = MathUtils.degToRad(pitchDeg);
-  const yaw = MathUtils.degToRad(yawDeg);
-  // ZYX order for ros2
-  const euler = new Euler(roll, pitch, yaw, "ZYX");
-  const quaternion = new Quaternion();
-  quaternion.setFromEuler(euler);
-  return quaternion;
-}
 
 export function useKeyboardControl(
   context: PanelExtensionContext,
@@ -24,15 +11,13 @@ export function useKeyboardControl(
 } {
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(() => new Set());
   const prevTopic = useRef<string | undefined>();
+  const prevPressedKeysSize = useRef<number>(0);
 
-  //meters per key press
-  const deltaPosMove = useMemo(() => state.data.linearSpeedMeter, [state.data.linearSpeedMeter]);
+  // meters per second
+  const linearSpeed = useMemo(() => state.data.linearSpeedMeter, [state.data.linearSpeedMeter]);
 
-  //degrees per key press
-  const deltaOrientationDeg = useMemo(
-    () => state.data.angularSpeedRad,
-    [state.data.angularSpeedRad],
-  );
+  // radians per second
+  const angularSpeed = useMemo(() => state.data.angularSpeedRad, [state.data.angularSpeedRad]);
 
   // Advertise the publish topic
   useEffect(() => {
@@ -45,7 +30,7 @@ export function useKeyboardControl(
 
     // Advertise new topic
     if (state.data.targetTopic) {
-      context.advertise?.(state.data.targetTopic, "geometry_msgs/msg/Pose");
+      context.advertise?.(state.data.targetTopic, "geometry_msgs/msg/Twist");
       prevTopic.current = state.data.targetTopic;
     }
 
@@ -78,75 +63,62 @@ export function useKeyboardControl(
 
         console.log("Keys pressed:", Array.from(newKeys).join(""));
 
-        // Calculate combined pose message from all pressed keys
-        const poseMessage = {
-          position: {
+        // Calculate combined Twist message from all pressed keys
+        const twistMessage = {
+          linear: {
             x: 0.0,
             y: 0.0,
             z: 0.0,
           },
-          // identity quaternion representing no rotation
-          orientation: {
+          angular: {
             x: 0.0,
             y: 0.0,
             z: 0.0,
-            w: 1.0,
           },
         };
 
-        // Accumulate position changes from all pressed keys
-        // Map keyboard controls to camera movement in camera frame:
+        // Accumulate linear velocity changes from all pressed keys
+        // Map keyboard controls to movement:
         // w/s: forward/backward (x-axis), a/d: left/right (y-axis), q/e: up/down (z-axis)
         newKeys.forEach((k) => {
           if (k === "w") {
-            poseMessage.position.x += deltaPosMove;
+            twistMessage.linear.x += linearSpeed;
           } else if (k === "s") {
-            poseMessage.position.x -= deltaPosMove;
+            twistMessage.linear.x -= linearSpeed;
           } else if (k === "a") {
-            poseMessage.position.y += deltaPosMove;
+            twistMessage.linear.y += linearSpeed;
           } else if (k === "d") {
-            poseMessage.position.y -= deltaPosMove;
+            twistMessage.linear.y -= linearSpeed;
           } else if (k === "q") {
-            poseMessage.position.z += deltaPosMove;
+            twistMessage.linear.z += linearSpeed;
           } else if (k === "e") {
-            poseMessage.position.z -= deltaPosMove;
+            twistMessage.linear.z -= linearSpeed;
           }
         });
 
-        // Accumulate rotation changes from all pressed keys
+        // Accumulate angular velocity changes from all pressed keys
         // u/o: roll left/right, i/k: pitch up/down, j/l: yaw left/right
-        let roll = 0.0;
-        let pitch = 0.0;
-        let yaw = 0.0;
-
         newKeys.forEach((k) => {
           if (k === "u") {
-            roll += deltaOrientationDeg;
+            twistMessage.angular.x += angularSpeed;
           } else if (k === "o") {
-            roll -= deltaOrientationDeg;
+            twistMessage.angular.x -= angularSpeed;
           } else if (k === "i") {
-            pitch -= deltaOrientationDeg;
+            twistMessage.angular.y -= angularSpeed;
           } else if (k === "k") {
-            pitch += deltaOrientationDeg;
+            twistMessage.angular.y += angularSpeed;
           } else if (k === "j") {
-            yaw += deltaOrientationDeg;
+            twistMessage.angular.z += angularSpeed;
           } else if (k === "l") {
-            yaw -= deltaOrientationDeg;
+            twistMessage.angular.z -= angularSpeed;
           }
         });
 
-        // update Pose orientation if there is any rotation value by keypress
-        if (roll !== 0 || pitch !== 0 || yaw !== 0) {
-          const quat = eulerToQuat(roll, pitch, yaw);
-          poseMessage.orientation.x = quat.x;
-          poseMessage.orientation.y = quat.y;
-          poseMessage.orientation.z = quat.z;
-          poseMessage.orientation.w = quat.w;
+        if (state.data.targetTopic) {
+          context.publish?.(state.data.targetTopic, twistMessage);
         }
 
-        if (state.data.targetTopic) {
-          context.publish?.(state.data.targetTopic, poseMessage);
-        }
+        prevPressedKeysSize.current = newKeys.size;
 
         return newKeys;
       });
@@ -162,6 +134,19 @@ export function useKeyboardControl(
         setPressedKeys((prev) => {
           const newKeys = new Set(prev);
           newKeys.delete(key);
+
+          // Send zero velocity Twist message when all keys are released
+          if (newKeys.size === 0 && prevPressedKeysSize.current > 0) {
+            const stopMessage = {
+              linear: { x: 0.0, y: 0.0, z: 0.0 },
+              angular: { x: 0.0, y: 0.0, z: 0.0 },
+            };
+            if (state.data.targetTopic) {
+              context.publish?.(state.data.targetTopic, stopMessage);
+            }
+          }
+
+          prevPressedKeysSize.current = newKeys.size;
           return newKeys;
         });
       }
@@ -177,8 +162,8 @@ export function useKeyboardControl(
     state.data.enabled,
     state.data.allowOnlyFocus,
     state.data.targetTopic,
-    deltaPosMove,
-    deltaOrientationDeg,
+    linearSpeed,
+    angularSpeed,
     context,
   ]);
 

@@ -106,9 +106,9 @@ export function useKeyboardControl(
           } else if (k === "s") {
             poseMessage.position.x -= deltaPosMove;
           } else if (k === "a") {
-            poseMessage.position.y -= deltaPosMove;
-          } else if (k === "d") {
             poseMessage.position.y += deltaPosMove;
+          } else if (k === "d") {
+            poseMessage.position.y -= deltaPosMove;
           } else if (k === "q") {
             poseMessage.position.z += deltaPosMove;
           } else if (k === "e") {
@@ -124,17 +124,17 @@ export function useKeyboardControl(
 
         newKeys.forEach((k) => {
           if (k === "u") {
-            roll -= deltaOrientationDeg;
-          } else if (k === "o") {
             roll += deltaOrientationDeg;
+          } else if (k === "o") {
+            roll -= deltaOrientationDeg;
           } else if (k === "i") {
-            pitch += deltaOrientationDeg;
-          } else if (k === "k") {
             pitch -= deltaOrientationDeg;
+          } else if (k === "k") {
+            pitch += deltaOrientationDeg;
           } else if (k === "j") {
-            yaw -= deltaOrientationDeg;
-          } else if (k === "l") {
             yaw += deltaOrientationDeg;
+          } else if (k === "l") {
+            yaw -= deltaOrientationDeg;
           }
         });
 

@@ -2,7 +2,7 @@ import { ExtensionContext } from "@foxglove/extension";
 
 import { PREFIX } from "./constants";
 import { Detection2DArray, detection2DArrayConverter, initDetection2DPanel } from "./detection2d";
-import { initPoseTeleopPanel } from "./pose-teleop/panel";
+import { initTeleopPanel } from "./teleop/panel";
 
 export function activate(extensionContext: ExtensionContext): void {
   // Detection2D Module
@@ -17,9 +17,9 @@ export function activate(extensionContext: ExtensionContext): void {
     converter: (msg: Detection2DArray) => detection2DArrayConverter(msg),
   });
 
-  // PoseTeleop Module
+  // Teleop Module
   extensionContext.registerPanel({
-    name: `${PREFIX}: PoseTeleop`,
-    initPanel: initPoseTeleopPanel,
+    name: `${PREFIX}: Teleop`,
+    initPanel: initTeleopPanel,
   });
 }

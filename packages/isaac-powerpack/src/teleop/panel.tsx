@@ -8,7 +8,7 @@ import { useKeyboardControl } from "./hooks/useKeyboardControl";
 import { useSettingsPanel } from "./hooks/useSettingsPanel";
 import { Canvas } from "../lib/comps/Canvas";
 
-function PoseTeleopPanel({ context }: { context: PanelExtensionContext }): ReactElement {
+function TeleopPanel({ context }: { context: PanelExtensionContext }): ReactElement {
   const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
   const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
   const { state } = useSettingsPanel(context, topics);
@@ -48,9 +48,9 @@ function PoseTeleopPanel({ context }: { context: PanelExtensionContext }): React
   );
 }
 
-export function initPoseTeleopPanel(context: PanelExtensionContext): () => void {
+export function initTeleopPanel(context: PanelExtensionContext): () => void {
   const root = createRoot(context.panelElement);
-  root.render(<PoseTeleopPanel context={context} />);
+  root.render(<TeleopPanel context={context} />);
 
   return () => {
     root.unmount();

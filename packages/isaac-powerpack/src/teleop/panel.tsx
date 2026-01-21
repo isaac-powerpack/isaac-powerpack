@@ -1,4 +1,5 @@
 import { PanelExtensionContext, Topic } from "@foxglove/extension";
+import { produce } from "immer";
 import { ReactElement, useEffect, useLayoutEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -11,7 +12,7 @@ import { Canvas } from "../lib/comps/Canvas";
 function TeleopPanel({ context }: { context: PanelExtensionContext }): ReactElement {
   const [renderDone, setRenderDone] = useState<(() => void) | undefined>();
   const [topics, setTopics] = useState<readonly Topic[] | undefined>(() => []);
-  const { state } = useSettingsPanel(context, topics);
+  const { state, setState } = useSettingsPanel(context, topics);
   const { pressedKeys } = useKeyboardControl(context, state);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
@@ -35,7 +36,17 @@ function TeleopPanel({ context }: { context: PanelExtensionContext }): ReactElem
     <div
       style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}
     >
-      <StatusBadge isEnabled={state.data.enabled} theme={theme} />
+      <StatusBadge
+        isEnabled={state.data.enabled}
+        theme={theme}
+        onClick={() => {
+          setState(
+            produce((draft) => {
+              draft.data.enabled = !draft.data.enabled;
+            }),
+          );
+        }}
+      />
       <Canvas>
         <KeyboardDisplayLayer
           theme={theme}

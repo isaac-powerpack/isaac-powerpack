@@ -1,9 +1,10 @@
 interface StatusBadgeProps {
   isEnabled: boolean;
   theme: "light" | "dark";
+  onClick?: () => void;
 }
 
-export function StatusBadge({ isEnabled, theme }: StatusBadgeProps): React.ReactElement {
+export function StatusBadge({ isEnabled, theme, onClick }: StatusBadgeProps): React.ReactElement {
   const statusColor = isEnabled ? "#22c55e" : "#ef4444";
   const statusText = isEnabled ? "Enabled" : "Disabled";
   const backgroundColor = theme === "dark" ? "#1a1a1a" : "#ffffff";
@@ -12,7 +13,9 @@ export function StatusBadge({ isEnabled, theme }: StatusBadgeProps): React.React
 
   return (
     <div
+      onClick={onClick}
       style={{
+        cursor: onClick ? "pointer" : "default",
         position: "absolute",
         top: "44px",
         right: "16px",

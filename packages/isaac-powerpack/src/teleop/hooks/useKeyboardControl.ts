@@ -41,6 +41,7 @@ export function useKeyboardControl(
     };
   }, [context, state.data.targetTopic]);
 
+  // Handle keydown and keyup events
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!state.data.enabled) {
@@ -61,63 +62,6 @@ export function useKeyboardControl(
         const newKeys = new Set(prev);
         newKeys.add(key);
 
-        // console.log("Keys pressed:", Array.from(newKeys).join(""));
-
-        // Calculate combined Twist message from all pressed keys
-        const twistMessage = {
-          linear: {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-          },
-          angular: {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-          },
-        };
-
-        // Accumulate linear velocity changes from all pressed keys
-        // Map keyboard controls to movement:
-        // w/s: forward/backward (x-axis), a/d: left/right (y-axis), q/e: up/down (z-axis)
-        newKeys.forEach((k) => {
-          if (k === "w") {
-            twistMessage.linear.x += linearSpeed;
-          } else if (k === "s") {
-            twistMessage.linear.x -= linearSpeed;
-          } else if (k === "a") {
-            twistMessage.linear.y += linearSpeed;
-          } else if (k === "d") {
-            twistMessage.linear.y -= linearSpeed;
-          } else if (k === "q") {
-            twistMessage.linear.z += linearSpeed;
-          } else if (k === "e") {
-            twistMessage.linear.z -= linearSpeed;
-          }
-        });
-
-        // Accumulate angular velocity changes from all pressed keys
-        // u/o: roll left/right, i/k: pitch up/down, j/l: yaw left/right
-        newKeys.forEach((k) => {
-          if (k === "u") {
-            twistMessage.angular.x += angularSpeed;
-          } else if (k === "o") {
-            twistMessage.angular.x -= angularSpeed;
-          } else if (k === "i") {
-            twistMessage.angular.y -= angularSpeed;
-          } else if (k === "k") {
-            twistMessage.angular.y += angularSpeed;
-          } else if (k === "j") {
-            twistMessage.angular.z += angularSpeed;
-          } else if (k === "l") {
-            twistMessage.angular.z -= angularSpeed;
-          }
-        });
-
-        if (state.data.targetTopic) {
-          context.publish?.(state.data.targetTopic, twistMessage);
-        }
-
         prevPressedKeysSize.current = newKeys.size;
 
         return newKeys;
@@ -134,18 +78,6 @@ export function useKeyboardControl(
         setPressedKeys((prev) => {
           const newKeys = new Set(prev);
           newKeys.delete(key);
-
-          // Send zero velocity Twist message when all keys are released
-          if (newKeys.size === 0 && prevPressedKeysSize.current > 0) {
-            const stopMessage = {
-              linear: { x: 0.0, y: 0.0, z: 0.0 },
-              angular: { x: 0.0, y: 0.0, z: 0.0 },
-            };
-            if (state.data.targetTopic) {
-              context.publish?.(state.data.targetTopic, stopMessage);
-            }
-          }
-
           prevPressedKeysSize.current = newKeys.size;
           return newKeys;
         });
@@ -158,7 +90,73 @@ export function useKeyboardControl(
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [state.data.enabled, state.data.targetTopic, linearSpeed, angularSpeed, context]);
+  }, [state.data.enabled]);
+
+  // Publish Twist messages based on pressed keys
+  useEffect(() => {
+    let twistMessage = {
+      linear: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+      },
+      angular: {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+      },
+    };
+
+    // Accumulate linear velocity changes from all pressed keys
+    // Map keyboard controls to movement:
+    // w/s: forward/backward (x-axis), a/d: left/right (y-axis), q/e: up/down (z-axis)
+    pressedKeys.forEach((k) => {
+      if (k === "w") {
+        twistMessage.linear.x += linearSpeed;
+      } else if (k === "s") {
+        twistMessage.linear.x -= linearSpeed;
+      } else if (k === "a") {
+        twistMessage.linear.y += linearSpeed;
+      } else if (k === "d") {
+        twistMessage.linear.y -= linearSpeed;
+      } else if (k === "q") {
+        twistMessage.linear.z += linearSpeed;
+      } else if (k === "e") {
+        twistMessage.linear.z -= linearSpeed;
+      }
+    });
+
+    // Accumulate angular velocity changes from all pressed keys
+    // u/o: roll left/right, i/k: pitch up/down, j/l: yaw left/right
+    pressedKeys.forEach((k) => {
+      if (k === "u") {
+        twistMessage.angular.x += angularSpeed;
+      } else if (k === "o") {
+        twistMessage.angular.x -= angularSpeed;
+      } else if (k === "i") {
+        twistMessage.angular.y -= angularSpeed;
+      } else if (k === "k") {
+        twistMessage.angular.y += angularSpeed;
+      } else if (k === "j") {
+        twistMessage.angular.z += angularSpeed;
+      } else if (k === "l") {
+        twistMessage.angular.z -= angularSpeed;
+      }
+    });
+
+    if (!state.data.targetTopic) {
+      return;
+    }
+
+    // Send zero velocity Twist message if all keys are released
+    if (pressedKeys.size === 0 && prevPressedKeysSize.current > 0) {
+      twistMessage = {
+        linear: { x: 0.0, y: 0.0, z: 0.0 },
+        angular: { x: 0.0, y: 0.0, z: 0.0 },
+      };
+    }
+    context.publish?.(state.data.targetTopic, twistMessage);
+  }, [pressedKeys, linearSpeed, angularSpeed, state.data.targetTopic, context]);
 
   return {
     pressedKeys,

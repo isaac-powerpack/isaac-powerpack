@@ -32,12 +32,8 @@ Key features include:
   - [x] Isaac Sim commands: `sim init`, `sim run` for simplified setup workflows
   - [ ] Isaac ROS commands: `ros init`, `ros run`, `ros build` for streamlined Docker workflows
 
-- PoseTeleop Module
-  - [ ] Keyboard camera movement control for `pow.workcell.camera` extension in Isaac Sim
-
-  ***
-
-  > Note: `pow.workcell.camera` will be implemented in [pow-orin-starter](https://github.com/bemunin/pow-orin-starter) template project.
+- Teleop Module
+  - [x] Developed a keyboard control panel to publish `geometry_msgs/Twist` messages for 6-DOF movement.
 
   </details>
 
@@ -50,8 +46,8 @@ Key features include:
   - [ ] Interactive object inspection (pose, distance, metadata) with camera mesh and pose axes rendering
   - [ ] Support visualization for Isaac ROS pose estimation packages (CenterPose, DOPE, FoundationPose)
 
-- PoseTeleop Module
-  - [ ] Joystick-based camera movement for `pow.workcell.camera` extension in Isaac Sim. support [Logitech F710 Gamepad](https://www.logitechg.com/th-th/products/gamepads/f710-wireless-gamepad.html) and [PS5 DualSense Wireless Controller](https://www.playstation.com/en-th/accessories/dualsense-wireless-controller/)
+  > _Remaining v0.2.0 features will be added soon in upcoming sprints_
+
   </details>
 
 <details>
@@ -59,13 +55,15 @@ Key features include:
 
 - Jetson Stat Module: Create a Foxglove panel to monitor Jetson device statistics
 - create-isaac: A starter project template generator for developing Isaac ROS and Isaac Sim applications.
+- Implement Joystick support in Teleop Module (`pow: Teleop`) support [Logitech F710 Gamepad](https://www.logitechg.com/th-th/products/gamepads/f710-wireless-gamepad.html) and [PS5 DualSense Wireless Controller](https://www.playstation.com/en-th/accessories/dualsense-wireless-controller/)
+  </details>
 </details>
 
 ## Usage
 
 ### Pow CLI
 
-Pow CLI usage can be found in the example repository [pow-orin-starter](https://github.com/bemunin/pow-orin-starter).
+Pow CLI usage can be found in the example repository [pow-orin-starter](https://github.com/isaac-powerpack/pow-orin-starter).
 
 ### Isaac Powerpack Foxglove
 
@@ -75,13 +73,14 @@ Pow CLI usage can be found in the example repository [pow-orin-starter](https://
 
 2. Follow the instructions in the **Easy installation** section of this blog post, [extending-px4-support](https://foxglove.dev/blog/extending-px4-support), and choose the `isaac-powerpack` package to install the Isaac Powerpack Foxglove extensions instead of PX4 Converter.
 
-**Feature Mapping**
+**Foxglove Feature Mapping**
 
-Here is the table of Isaac ROS Packages or Isaac Sim Extensions mapping to our corresponding Isaac Powerpack features:
+The following table maps standard Robotic tasks to our corresponding Isaac Powerpack Foxglove features:
 
-| Isaac ROS/Sim              | Isaac Powerpack Feature |
-| :------------------------- | :---------------------- |
-| Isaac ROS Object Detection | pow: Detection 2D panel |
+| Tasks              | Isaac Powerpack Foxglove Panel |
+| :----------------- | :----------------------------- |
+| Object Detection   | pow: Detection 2D              |
+| 6-DOF Twist Teleop | pow: Teleop                    |
 
 ## Support Matrix
 

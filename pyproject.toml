@@ -4,17 +4,11 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = [
-    "click>=8.1.7",
-    "pow-cli",
-    "toml>=0.10.2",
-]
-license="Apache-2.0"
+dependencies = ["click>=8.1.7", "pow-cli", "toml>=0.10.2"]
+license = "Apache-2.0"
 
 [project.optional-dependencies]
-sim = [
-    "isaacsim[all,extscache]==5.1.0",
-]
+sim = ["isaacsim[all,extscache]==5.1.0"]
 
 [project.scripts]
 pow = "packages.cli:pow"
@@ -23,9 +17,7 @@ pow = "packages.cli:pow"
 url = "https://pypi.nvidia.com/"
 
 [tool.uv.workspace]
-members = [
-    "packages/pow-cli",
-]
+members = ["packages/pow-cli"]
 
 [tool.uv.sources]
 pow-cli = { workspace = true, editable = true }

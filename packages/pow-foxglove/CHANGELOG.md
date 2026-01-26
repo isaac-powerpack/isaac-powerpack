@@ -1,5 +1,16 @@
 # isaac-powerpack version history
 
+## 0.1.0a3 (2026-01-26)
+
+### Features
+
+- add `pow: Teleop` panel to control robot 6-DOF movement velocity (Twist messages) using keyboard inputs
+- rename isaac-powerpack package to pow-foxglove
+
+### Bug Fixes
+
+- fix Canvas component vertical resize issue
+
 ## 0.0.1 (2025-12-11)
 
 ### Features

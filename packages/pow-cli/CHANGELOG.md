@@ -2,6 +2,12 @@
 
 All notable changes to the `pow-cli` package will be documented in this file.
 
+## [0.1.0a3] - 2026-01-27
+
+### Fixed
+
+- Fixed incorrect Ubuntu base Docker image version in `pow sim init` ROS workspace setup. Now correctly uses Ubuntu 22.04 for ROS Humble and Ubuntu 24.04 for ROS Jazzy (previously hardcoded to 22.04 for both).
+
 ## [0.1.0a2] - 2025-12-25
 
 ### Fixed

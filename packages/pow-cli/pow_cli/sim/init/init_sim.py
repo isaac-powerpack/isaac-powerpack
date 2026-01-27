@@ -268,9 +268,10 @@ def setup_ros_workspace(pow_config: dict, is_existing: bool) -> dict:
     if ros_distro in ["humble", "jazzy"]:
         # Install ROS dependencies
         click.echo(f"Building ROS {ros_distro} workspace...")
+        ubuntu_version = "22.04" if ros_distro == "humble" else "24.04"
         try:
             subprocess.run(
-                ["./build_ros.sh", "-d", ros_distro, "-v", "22.04"],
+                ["./build_ros.sh", "-d", ros_distro, "-v", ubuntu_version],
                 cwd=ros_workspace_path,
                 check=True,
             )

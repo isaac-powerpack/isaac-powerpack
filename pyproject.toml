@@ -3,7 +3,7 @@ name = "isaac-powerpack"
 version = "0.1.0a3"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 dependencies = ["click>=8.1.7", "pow-cli", "toml>=0.10.2"]
 license = "Apache-2.0"
 
